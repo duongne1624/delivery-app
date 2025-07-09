@@ -1,38 +1,64 @@
 import 'package:flutter/material.dart';
-import '../models/user.dart';
-import '../data/mock_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../models/user_model.dart';
+import '../services/dio_service.dart';
 
 class AuthProvider with ChangeNotifier {
-  User? _user;
+  UserModel? user;
 
-  User? get user => _user;
+  bool get isAuthenticated => user != null;
 
-  void login(String phone, String password) {
-    final loginData = MockData.data['auth']['login'];
-    if (loginData['phone'] == phone && loginData['password'] == password) {
-      final userJson = loginData['response']['user'];
-      userJson['role'] = userJson['role'] ?? 'customer';
-      _user = User.fromJson(userJson);
+  Future<bool> loadUser() async {
+    try {
+      final res = await DioService.instance.get('/users/me');
+      user = UserModel.fromJson(res.data['data']);
       notifyListeners();
+      return true;
+    } catch (e) {
+      await DioService.clearToken();
+      return false;
     }
   }
 
-  void register(String phone, String password, String email, String name) {
-    final registerData = MockData.data['auth']['register'];
-    if (registerData['phone'] == phone && registerData['password'] == password && registerData['email'] == email) {
-      _user = User(
-        id: 'user_new',
-        phone: phone,
-        email: email,
-        role: 'customer',
-        name: name,
-      );
-      notifyListeners();
+  Future<bool> login(String phone, String password) async {
+    try {
+      final res = await DioService.instance.post('/auth/login', data: {
+        'phone': phone,
+        'password': password,
+      });
+
+      final token = res.data['data']['access_token'];
+      await DioService.setToken(token);
+
+      return await loadUser();
+    } catch (e) {
+      return false;
     }
   }
 
-  void logout() {
-    _user = null;
+  Future<bool> register({
+    required String name,
+    required String phone,
+    String? email,
+    required String password,
+  }) async {
+    try {
+      final res = await DioService.instance.post('/auth/register', data: {
+        'name': name,
+        'phone': phone,
+        'email': email,
+        'password': password,
+      });
+
+      return res.data['success'] == true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> logout() async {
+    user = null;
+    await DioService.clearToken();
     notifyListeners();
   }
 }
