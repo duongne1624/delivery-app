@@ -3,6 +3,7 @@ class UserModel {
   final String name;
   final String phone;
   final String? email;
+  final String? image;
   final String role;
   final bool isActive;
 
@@ -11,6 +12,7 @@ class UserModel {
     required this.name,
     required this.phone,
     this.email,
+    this.image,
     required this.role,
     required this.isActive,
   });
@@ -21,6 +23,7 @@ class UserModel {
       name: json['name'],
       phone: json['phone'],
       email: json['email'],
+      image: json['image'],
       role: json['role'],
       isActive: json['is_active'],
     );

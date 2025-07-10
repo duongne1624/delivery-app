@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
-import 'providers/restaurant_provider.dart';
 import 'providers/home_provider.dart';
-import 'screens/auth/splash_screen.dart';
+import 'providers/restaurant_provider.dart';
+import 'routes/routes.dart';
 import 'services/dio_service.dart';
+import 'theme/app_background.dart';
+import 'theme/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await DioService.init();
-
+  
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => RestaurantProvider()),
         ChangeNotifierProvider(create: (_) => HomeProvider()),
+        ChangeNotifierProvider(create: (_) => RestaurantProvider()),
       ],
       child: const MyApp(),
     ),
@@ -24,13 +26,18 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'App giao đồ ăn',
-      theme: ThemeData(primarySwatch: Colors.green),
-      home: const SplashScreen(),
+      title: 'App Giao Đồ Ăn',
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+
+      builder: (context, child) => AppBackground(child: child ?? const SizedBox()),
     );
   }
 }

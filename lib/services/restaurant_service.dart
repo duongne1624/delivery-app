@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../models/restaurant_model.dart';
 import 'dio_service.dart';
 

@@ -45,9 +45,7 @@ class _TopProductsScreenState extends State<TopProductsScreen> {
                 return ListTile(
                   title: Text(item.name),
                   subtitle: Text('${item.price} đ'),
-                  leading: item.imageUrl != null
-                      ? Image.network(item.imageUrl!, width: 50, height: 50, fit: BoxFit.cover)
-                      : const Icon(Icons.ramen_dining),
+                  leading: Image.network(item.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
                 );
               },
             ),

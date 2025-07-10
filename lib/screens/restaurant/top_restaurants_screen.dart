@@ -45,9 +45,7 @@ class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
                 return ListTile(
                   title: Text(item.name),
                   subtitle: Text(item.address),
-                  leading: item.imageUrl != null
-                      ? Image.network(item.imageUrl!, width: 50, height: 50, fit: BoxFit.cover)
-                      : const Icon(Icons.store),
+                  leading:  Image.network(item.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
                 );
               },
             ),

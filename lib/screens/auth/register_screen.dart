@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
-import 'login_screen.dart';
+import '../../routes/app_navigator.dart';
+import '../../widgets/app_button.dart';
+import '../../widgets/app_text_field.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,7 +22,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void _register() async {
     setState(() => isLoading = true);
 
-    final auth = Provider.of<AuthProvider>(context, listen: false);
+    final auth = context.read<AuthProvider>();
     final success = await auth.register(
       name: nameCtrl.text.trim(),
       phone: phoneCtrl.text.trim(),
@@ -29,48 +31,97 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
 
     setState(() => isLoading = false);
-
     if (!mounted) return;
 
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Đăng ký thành công")),
-      );
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Đăng ký thất bại")),
-      );
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(success ? "Đăng ký thành công" : "Đăng ký thất bại"),
+        backgroundColor: success ? Colors.green : Colors.red,
+      ),
+    );
+
+    if (success) AppNavigator.toLogin(context);
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Đăng ký')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(
-          children: [
-            TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Họ tên')),
-            TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Số điện thoại')),
-            TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Email (không bắt buộc)')),
-            TextField(controller: passCtrl, obscureText: true, decoration: const InputDecoration(labelText: 'Mật khẩu')),
-            const SizedBox(height: 16),
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(onPressed: _register, child: const Text('Đăng ký')),
-            TextButton(
-              onPressed: () => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const LoginScreen()),
-              ),
-              child: const Text("Đã có tài khoản? Đăng nhập"),
-            )
-          ],
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Icon(Icons.fastfood, size: 64),
+                const SizedBox(height: 12),
+                Text(
+                  'Tạo tài khoản',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(fontSize: 22),
+                ),
+                const SizedBox(height: 32),
+
+                AppTextField(
+                  controller: nameCtrl,
+                  hintText: 'Họ tên',
+                  icon: Icons.person,
+                ),
+                const SizedBox(height: 16),
+
+                AppTextField(
+                  controller: phoneCtrl,
+                  hintText: 'Số điện thoại',
+                  icon: Icons.phone,
+                  keyboardType: TextInputType.phone,
+                ),
+                const SizedBox(height: 16),
+
+                AppTextField(
+                  controller: emailCtrl,
+                  hintText: 'Email (không bắt buộc)',
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 16),
+
+                AppTextField(
+                  controller: passCtrl,
+                  hintText: 'Mật khẩu',
+                  icon: Icons.lock,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 28),
+
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : AppButton(
+                          label: 'Đăng ký',
+                          onPressed: _register,
+                          isLoading: isLoading,
+                          icon: Icons.person_add,
+                        )
+                ),
+                const SizedBox(height: 20),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Đã có tài khoản?"),
+                    TextButton(
+                      onPressed: () => AppNavigator.toLogin(context),
+                      child: const Text("Đăng nhập"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
