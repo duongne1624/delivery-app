@@ -3,6 +3,7 @@ class ProductModel {
   final String name;
   final int price;
   final String imageUrl;
+  final String restaurantId;
   final int totalSold;
 
   ProductModel({
@@ -10,6 +11,7 @@ class ProductModel {
     required this.name,
     required this.price,
     required this.imageUrl,
+    required this.restaurantId,
     required this.totalSold
   });
 
@@ -19,6 +21,7 @@ class ProductModel {
       name: json['name'],
       price: json['price'],
       imageUrl: json['image'],
+      restaurantId: json['restaurant_id'],
       totalSold: json['total_sold']
     );
   }

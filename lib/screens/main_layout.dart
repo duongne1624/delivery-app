@@ -53,7 +53,7 @@ class _MainLayoutState extends State<MainLayout> {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(0.01),
+              color: theme.colorScheme.surface.withOpacity(0.1),
               boxShadow: [
                 BoxShadow(
                   color: theme.colorScheme.surface.withOpacity(0.01),

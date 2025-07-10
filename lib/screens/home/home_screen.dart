@@ -1,3 +1,4 @@
+import 'package:delivery_online_app/routes/app_navigator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/home_provider.dart';
@@ -26,32 +27,56 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<HomeProvider>(context);
+    final theme = Theme.of(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Trang chủ'),
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.person_outline)),
-        ],
+      backgroundColor: Colors.transparent,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(100),
+        child: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          automaticallyImplyLeading: false,
+          title: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              'Trang chủ',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onBackground,
+              ),
+            ),
+          ),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.person_outline, color: theme.colorScheme.onBackground),
+              onPressed: () {},
+            ),
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(60),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: const SearchBarWidget(),
+            ),
+          ),
+        ),
       ),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: provider.loadHomeData,
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SearchBarWidget(),
-                    const SizedBox(height: 16),
                     const CategoryGrid(),
                     const SizedBox(height: 16),
+
                     SectionHeader(
                       title: 'Nhà hàng bán chạy',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const TopRestaurantsScreen()),
-                      ),
+                      onTap: () => AppNavigator.toTopRestaurants(context)
                     ),
                     HorizontalList(
                       items: provider.topRestaurants.map((e) {
@@ -62,13 +87,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }).toList(),
                     ),
+
                     const SizedBox(height: 16),
                     SectionHeader(
                       title: 'Sản phẩm bán chạy',
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => const TopProductsScreen()),
-                      ),
+                      onTap: () => AppNavigator.toTopProducts(context)
                     ),
                     HorizontalList(
                       items: provider.topProducts.map((e) {
