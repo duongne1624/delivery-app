@@ -11,49 +11,46 @@ class TopRestaurantsScreen extends StatefulWidget {
 }
 
 class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
-  final List<RestaurantModel> _restaurants = [];
-  final ScrollController _scrollController = ScrollController();
-
+  List<RestaurantModel> _restaurants = [];
   bool _loading = false;
   bool _hasMore = true;
   int _page = 1;
   final int _limit = 20;
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    _load();
-    _scrollController.addListener(_onScroll);
+    _loadMore();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        _loadMore();
+      }
+    });
   }
 
-  Future<void> _load() async {
+  Future<void> _loadMore() async {
     if (_loading || !_hasMore) return;
-
     setState(() => _loading = true);
+
     try {
       final res = await DioService.instance.get('/restaurants/top-selling', queryParameters: {
         'limit': _limit,
         'page': _page,
       });
+
       final List data = res.data['data'];
-      final items = data.map((e) => RestaurantModel.fromJson(e)).toList();
+      final newItems = data.map((e) => RestaurantModel.fromJson(e)).toList();
 
       setState(() {
-        _restaurants.addAll(items);
-        _hasMore = items.length == _limit;
-        if (_hasMore) _page++;
+        _restaurants.addAll(newItems);
+        _hasMore = newItems.length == _limit;
+        _page++;
       });
     } catch (e) {
-      debugPrint('Lỗi tải nhà hàng: $e');
+      debugPrint('Error loading top restaurants: $e');
     } finally {
       setState(() => _loading = false);
-    }
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 100) {
-      _load();
     }
   }
 
@@ -66,38 +63,31 @@ class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Nhà hàng bán chạy')),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          _page = 1;
-          _restaurants.clear();
-          _hasMore = true;
-          await _load();
-        },
-        child: ListView.builder(
-          controller: _scrollController,
-          itemCount: _restaurants.length + (_hasMore ? 1 : 0),
-          padding: const EdgeInsets.all(12),
-          itemBuilder: (_, i) {
-            if (i >= _restaurants.length) {
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-
+      body: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.all(12),
+        itemCount: _restaurants.length + (_hasMore ? 1 : 0),
+        itemBuilder: (_, i) {
+          if (i < _restaurants.length) {
             final item = _restaurants[i];
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: ItemCard(
                 title: item.name,
                 subtitle: item.address,
-                imageUrl: item.imageUrl,
+                imageUrl: item.image,
               ),
             );
-          },
-        ),
+          } else {
+            return const Center(child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 16),
+              child: CircularProgressIndicator(),
+            ));
+          }
+        },
       ),
     );
   }

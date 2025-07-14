@@ -44,8 +44,8 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
 
               final restaurant = provider.restaurants[index];
               return ListTile(
-                leading: restaurant.imageUrl.isNotEmpty
-                    ? Image.network(restaurant.imageUrl, width: 50, height: 50, fit: BoxFit.cover)
+                leading: restaurant.image.isNotEmpty
+                    ? Image.network(restaurant.image, width: 50, height: 50, fit: BoxFit.cover)
                     : const Icon(Icons.restaurant),
                 title: Text(restaurant.name),
                 subtitle: Text(restaurant.address),

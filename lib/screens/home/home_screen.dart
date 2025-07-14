@@ -21,7 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    Provider.of<HomeProvider>(context, listen: false).loadHomeData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<HomeProvider>(context, listen: false).loadHomeData();
+    });
   }
 
   @override
@@ -83,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ItemCard(
                           title: e.name,
                           subtitle: e.address,
-                          imageUrl: e.imageUrl,
+                          imageUrl: e.image,
                         );
                       }).toList(),
                     ),
@@ -98,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         return ItemCard(
                           title: e.name,
                           subtitle: '${e.price} đ',
-                          imageUrl: e.imageUrl,
+                          imageUrl: e.image,
                         );
                       }).toList(),
                     ),

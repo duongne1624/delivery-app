@@ -3,6 +3,27 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static const primaryColor = Colors.black;
 
+  // Gradient cho background
+  static const lightBackgroundGradient = LinearGradient(
+    colors: [
+      Color(0xFFe0f7fa),
+      Color(0xFFfce4ec),
+      Color(0xFFf3e5f5),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  static const darkBackgroundGradient = LinearGradient(
+    colors: [
+      Color(0xFF1E1E1E),
+      Color(0xFF2C2C2C),
+      Color(0xFF424242),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: primaryColor,

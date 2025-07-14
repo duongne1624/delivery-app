@@ -93,7 +93,7 @@ class _TopProductsScreenState extends State<TopProductsScreen> {
               child: ItemCard(
                 title: item.name,
                 subtitle: '${item.price} đ',
-                imageUrl: item.imageUrl,
+                imageUrl: item.image,
               ),
             );
           },

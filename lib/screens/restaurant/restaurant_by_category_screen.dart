@@ -72,7 +72,7 @@ class _RestaurantByCategoryScreenState extends State<RestaurantByCategoryScreen>
           return ListTile(
             title: Text(item.name),
             subtitle: Text(item.address),
-            leading: Image.network(item.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
+            leading: Image.network(item.image, width: 50, height: 50, fit: BoxFit.cover),
           );
         },
       ),
