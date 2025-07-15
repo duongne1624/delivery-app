@@ -7,8 +7,7 @@ import '../../widgets/search_bar.dart';
 import '../../widgets/horizontal_list.dart';
 import '../../widgets/section_header.dart';
 import '../../widgets/category_grid.dart';
-import '../../screens/restaurant/top_restaurants_screen.dart';
-import '../../screens/product/top_products_screen.dart';
+import '../../widgets/shimmer_item_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,7 +21,10 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeProvider>(context, listen: false).loadHomeData();
+      final provider = Provider.of<HomeProvider>(context, listen: false);
+      if (provider.categories.isEmpty || provider.topProducts.isEmpty || provider.topRestaurants.isEmpty) {
+        provider.loadHomeData();
+      }
     });
   }
 
@@ -32,12 +34,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: theme.colorScheme.background,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+          backgroundColor: theme.scaffoldBackgroundColor,
+          elevation: 0.5,
           automaticallyImplyLeading: false,
           title: Padding(
             padding: const EdgeInsets.only(top: 8.0),
@@ -59,13 +61,37 @@ class _HomeScreenState extends State<HomeScreen> {
             preferredSize: const Size.fromHeight(60),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: const SearchBarWidget(),
+              child: SearchBarWidget(isLoading: provider.isLoading),
             ),
           ),
         ),
       ),
       body: provider.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const CategoryGrid(), // có thể dùng shimmer nếu muốn
+                  const SizedBox(height: 16),
+                  SectionHeader(
+                    title: 'Nhà hàng bán chạy',
+                    onTap: () {}, // placeholder
+                  ),
+                  HorizontalList(
+                    items: List.generate(5, (_) => const ShimmerItemCard()),
+                  ),
+                  const SizedBox(height: 16),
+                  SectionHeader(
+                    title: 'Sản phẩm bán chạy',
+                    onTap: () {}, // placeholder
+                  ),
+                  HorizontalList(
+                    items: List.generate(5, (_) => const ShimmerItemCard()),
+                  ),
+                ],
+              ),
+            )
           : RefreshIndicator(
               onRefresh: provider.loadHomeData,
               child: SingleChildScrollView(
@@ -75,10 +101,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const CategoryGrid(),
                     const SizedBox(height: 16),
-
                     SectionHeader(
                       title: 'Nhà hàng bán chạy',
-                      onTap: () => AppNavigator.toTopRestaurants(context)
+                      onTap: () => AppNavigator.toTopRestaurants(context),
                     ),
                     HorizontalList(
                       items: provider.topRestaurants.map((e) {
@@ -89,11 +114,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         );
                       }).toList(),
                     ),
-
                     const SizedBox(height: 16),
                     SectionHeader(
                       title: 'Sản phẩm bán chạy',
-                      onTap: () => AppNavigator.toTopProducts(context)
+                      onTap: () => AppNavigator.toTopProducts(context),
                     ),
                     HorizontalList(
                       items: provider.topProducts.map((e) {

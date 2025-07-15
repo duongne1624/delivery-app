@@ -23,7 +23,7 @@ class HomeProvider with ChangeNotifier {
       ]);
 
       final categoryList = responses[0].data['data'] as List;
-      final restaurantList = responses[1].data['data'] as List;
+      final restaurantList = responses[1].data['data']['data'] as List;
       final productList = responses[2].data['data'] as List;
 
       categories = categoryList.map((e) => CategoryModel.fromJson(e)).toList();

@@ -8,7 +8,7 @@ class UserModel {
   final bool isActive;
 
   UserModel({
-    required this.id,
+    required this.id, 
     required this.name,
     required this.phone,
     this.email,

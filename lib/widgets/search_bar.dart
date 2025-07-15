@@ -1,28 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 
 class SearchBarWidget extends StatelessWidget {
-  const SearchBarWidget({super.key});
+  final bool isLoading;
+  const SearchBarWidget({super.key, this.isLoading = false});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    if (isLoading) {
+      return Shimmer.fromColors(
+        baseColor: Colors.grey[300]!,
+        highlightColor: Colors.grey[100]!,
+        child: Container(
+          height: 50,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      );
+    }
 
     return TextField(
-      style: TextStyle(color: theme.colorScheme.onBackground),
       decoration: InputDecoration(
-        hintText: 'Tìm kiếm món ăn, danh mục...',
-        hintStyle: TextStyle(color: theme.colorScheme.onBackground.withOpacity(0.5)),
-        prefixIcon: Icon(Icons.search, color: theme.colorScheme.onBackground.withOpacity(0.7)),
+        hintText: 'Tìm kiếm quán ăn...',
+        prefixIcon: const Icon(Icons.search),
         filled: true,
-        fillColor: theme.colorScheme.surface.withOpacity(0.05), // nền nhẹ
-        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+        fillColor: Colors.grey[200],
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: theme.colorScheme.onBackground.withOpacity(0.01)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: theme.colorScheme.onBackground.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
         ),
       ),
     );

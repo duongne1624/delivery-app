@@ -43,13 +43,13 @@ class ProductModel {
       id: json['id'],
       name: json['name'],
       price: double.tryParse(json['price'].toString()) ?? 0,
-      description: json['description'],
+      description: json['description'] ?? 'des',
       image: json['image'],
-      isAvailable: json['is_available'],
-      discountPercent: json['discount_percent'],
-      soldCount: json['sold_count'],
+      isAvailable: json['is_available'] ?? false,
+      discountPercent: json['discount_percent'] ?? 0,
+      soldCount: json['sold_count'] ?? 0,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      totalReviews: json['total_reviews'],
+      totalReviews: json['total_reviews'] ?? 0,
       restaurantId: json['restaurant_id'],
       restaurant: json['restaurant'] != null
           ? RestaurantModel.fromJson(json['restaurant'])

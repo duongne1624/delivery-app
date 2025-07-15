@@ -16,9 +16,9 @@ class AppTheme {
 
   static const darkBackgroundGradient = LinearGradient(
     colors: [
-      Color(0xFF1E1E1E),
-      Color(0xFF2C2C2C),
-      Color(0xFF424242),
+      Color.fromARGB(255, 51, 51, 51),
+      Color.fromARGB(255, 77, 71, 71),
+      Color.fromARGB(255, 80, 73, 73),
     ],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,

@@ -39,7 +39,7 @@ class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
         'page': _page,
       });
 
-      final List data = res.data['data'];
+      final List data = res.data['data']['data'];
       final newItems = data.map((e) => RestaurantModel.fromJson(e)).toList();
 
       setState(() {
