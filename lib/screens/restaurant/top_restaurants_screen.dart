@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/restaurant_model.dart';
+import '../../routes/app_navigator.dart';
 import '../../services/dio_service.dart';
 import '../../widgets/item_cart.dart';
 
@@ -79,6 +80,7 @@ class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
                 title: item.name,
                 subtitle: item.address,
                 imageUrl: item.image,
+                onTap: () => AppNavigator.toRestaurantDetail(context, item.id),
               ),
             );
           } else {

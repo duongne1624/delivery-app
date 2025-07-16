@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/restaurant_provider.dart';
+import '../../routes/app_navigator.dart';
 
 class RestaurantListScreen extends StatefulWidget {
   const RestaurantListScreen({super.key});
@@ -49,9 +50,7 @@ class _RestaurantListScreenState extends State<RestaurantListScreen> {
                     : const Icon(Icons.restaurant),
                 title: Text(restaurant.name),
                 subtitle: Text(restaurant.address),
-                onTap: () {
-                  // TODO: chuyển đến chi tiết nhà hàng
-                },
+                onTap: () => AppNavigator.toRestaurantDetail(context, restaurant.id),
               );
             },
           );

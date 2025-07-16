@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/product_model.dart';
+import '../../routes/app_navigator.dart';
 import '../../services/dio_service.dart';
 import '../../widgets/item_cart.dart';
 
@@ -94,6 +95,7 @@ class _TopProductsScreenState extends State<TopProductsScreen> {
                 title: item.name,
                 subtitle: '${item.price} đ',
                 imageUrl: item.image,
+                onTap: () => AppNavigator.toRestaurantDetail(context, item.restaurantId),
               ),
             );
           },

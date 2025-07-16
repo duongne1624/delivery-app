@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import '../../models/category_model.dart';
 import '../../models/restaurant_model.dart';
+import '../../routes/app_navigator.dart';
 import '../../services/dio_service.dart';
 
 class RestaurantByCategoryScreen extends StatefulWidget {
@@ -73,6 +74,7 @@ class _RestaurantByCategoryScreenState extends State<RestaurantByCategoryScreen>
             title: Text(item.name),
             subtitle: Text(item.address),
             leading: Image.network(item.image, width: 50, height: 50, fit: BoxFit.cover),
+            onTap: () => AppNavigator.toRestaurantDetail(context, item.id),
           );
         },
       ),

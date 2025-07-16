@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/restaurant_model.dart';
+import '../screens/restaurant/restaurant_detail_screen.dart';
 import 'routes.dart';
 
 class AppNavigator {
@@ -34,5 +36,17 @@ class AppNavigator {
 
   static void toTopProducts(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.topProducts);
+  }
+
+  static void toSearchScreen(BuildContext context, String keyword) {
+    Navigator.pushNamed(context, '/search', arguments: keyword);
+  }
+
+  static void toRestaurantDetail(BuildContext context, String restaurantId) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.restaurantDetail,
+      arguments: restaurantId,
+    );
   }
 }

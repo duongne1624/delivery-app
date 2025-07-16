@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.background,
+      backgroundColor: Colors.transparent,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: AppBar(
@@ -111,6 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: e.name,
                           subtitle: e.address,
                           imageUrl: e.image,
+                          onTap: () => AppNavigator.toRestaurantDetail(context, e.id),
                         );
                       }).toList(),
                     ),
@@ -125,6 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: e.name,
                           subtitle: '${e.price} đ',
                           imageUrl: e.image,
+                          onTap: () => AppNavigator.toRestaurantDetail(context, e.restaurantId),
                         );
                       }).toList(),
                     ),
