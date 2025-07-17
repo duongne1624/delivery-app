@@ -1,3 +1,4 @@
+import 'package:delivery_online_app/screens/order/order_detail_screen.dart';
 import 'package:delivery_online_app/screens/search/restaurant_search_delegate.dart';
 import 'package:flutter/material.dart';
 import '../screens/auth/login_screen.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
   static const String topProducts = '/products/top';
   static const String search = '/search';
   static const String restaurantDetail = '/restaurant/detail';
+  static const String orderDetail = '/orders/detail';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -52,6 +54,9 @@ class AppRoutes {
       case restaurantDetail:
         final id = settings.arguments as String;
         return MaterialPageRoute(builder: (_) => RestaurantDetailScreen(restaurantId: id));
+      case orderDetail:
+        final id = settings.arguments as String;
+        return MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id));
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

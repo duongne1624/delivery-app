@@ -18,12 +18,10 @@ class MainLayout extends StatefulWidget {
 class _MainLayoutState extends State<MainLayout> {
   late int _selectedIndex;
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    OrderScreen(),
-    FavoritesScreen(),
-    ProfileScreen(),
-  ];
+  final PageStorageBucket _bucket = PageStorageBucket();
+
+  // Tạo callback để refresh đơn hàng
+  final GlobalKey<OrderScreenState> _orderScreenKey = GlobalKey<OrderScreenState>();
 
   @override
   void initState() {
@@ -32,7 +30,13 @@ class _MainLayoutState extends State<MainLayout> {
   }
 
   void _onTap(int index) {
-    setState(() => _selectedIndex = index);
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    if (index == 1) {
+      _orderScreenKey.currentState?.refreshOrders();
+    }
   }
 
   @override
@@ -40,9 +44,17 @@ class _MainLayoutState extends State<MainLayout> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
+      body: PageStorage(
+        bucket: _bucket,
+        child: IndexedStack(
+          index: _selectedIndex,
+          children: [
+            const HomeScreen(),
+            OrderScreen(key: _orderScreenKey),
+            const FavoritesScreen(),
+            const ProfileScreen(),
+          ],
+        ),
       ),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.only(
@@ -115,9 +127,7 @@ class _MainLayoutState extends State<MainLayout> {
         ),
         child: Icon(
           icon,
-          color: isSelected
-              ? theme.colorScheme.primary
-              : Colors.grey,
+          color: isSelected ? theme.colorScheme.primary : Colors.grey,
         ),
       ),
       label: label,
