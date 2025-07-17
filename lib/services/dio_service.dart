@@ -3,8 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class DioService {
   static final Dio _dio = Dio(BaseOptions(
-    // baseUrl: 'http://10.0.2.2:3000',
-    baseUrl: 'http://localhost:3000',
+    baseUrl: 'http://10.0.2.2:3000',
+    // baseUrl: 'http://localhost:3000',
     connectTimeout: Duration(seconds: 10),
     receiveTimeout: Duration(seconds: 10),
   ));

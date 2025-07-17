@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../models/restaurant_model.dart';
-import '../screens/restaurant/restaurant_detail_screen.dart';
 import 'routes.dart';
 
 class AppNavigator {
@@ -47,6 +45,14 @@ class AppNavigator {
       context,
       AppRoutes.restaurantDetail,
       arguments: restaurantId,
+    );
+  }
+
+  static void toOrderDetail(BuildContext context, String orderId) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.orderDetail,
+      arguments: orderId,
     );
   }
 }

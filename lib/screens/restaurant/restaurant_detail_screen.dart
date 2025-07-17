@@ -3,6 +3,7 @@ import '../../models/product_model.dart';
 import '../../models/restaurant_model.dart';
 import '../../services/dio_service.dart';
 import '../../widgets/product_item_card.dart';
+import '../order/order_confirmation_screen.dart';
 
 class RestaurantDetailScreen extends StatefulWidget {
   final String restaurantId;
@@ -211,58 +212,83 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     shrinkWrap: true,
                     itemCount: _cart.length,
-                    separatorBuilder: (_, __) => const Divider(height: 1),
+                    separatorBuilder: (_, __) => const Divider(height: 1, color: Colors.grey),
                     itemBuilder: (_, index) {
                       final entry = _cart.entries.elementAt(index);
                       final product = _products.firstWhere((p) => p.id == entry.key);
                       final quantity = entry.value;
                       final itemTotal = product.price * quantity;
 
-                      return Row(
-                        children: [
-                          // Tên sản phẩm
-                          Expanded(
-                            child: Text(
-                              product.name,
-                              style: theme.textTheme.bodyMedium,
-                              overflow: TextOverflow.ellipsis,
+                      return Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            // Ảnh sản phẩm
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.network(
+                                product.image,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
 
-                          // Giá
-                          Text(
-                            '${itemTotal.toStringAsFixed(0)} đ',
-                            style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-                          ),
-                          const SizedBox(width: 8),
+                            // Thông tin sản phẩm
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name,
+                                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${product.price.toStringAsFixed(0)} đ x $quantity',
+                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                                  ),
+                                ],
+                              ),
+                            ),
 
-                          // Nút trừ
-                          IconButton(
-                            icon: const Icon(Icons.remove_circle_outline, size: 20),
-                            onPressed: () => _removeFromCart(product),
-                          ),
+                            // Tổng
+                            Text(
+                              '${itemTotal.toStringAsFixed(0)} đ',
+                              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                            ),
 
-                          // Số lượng
-                          Text('$quantity', style: theme.textTheme.bodyMedium),
-
-                          // Nút cộng
-                          IconButton(
-                            icon: const Icon(Icons.add_circle_outline, size: 20),
-                            onPressed: () => _addToCart(product),
-                          ),
-
-                          // Nút xoá
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
-                            onPressed: () => _deleteFromCart(product),
-                          ),
-                        ],
+                            // Hành động
+                            const SizedBox(width: 8),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.remove_circle_outline, size: 20, color: theme.colorScheme.primary),
+                                  onPressed: () => _removeFromCart(product),
+                                ),
+                                Text('$quantity', style: theme.textTheme.bodyMedium),
+                                IconButton(
+                                  icon: Icon(Icons.add_circle_outline, size: 20, color: theme.colorScheme.primary),
+                                  onPressed: () => _addToCart(product),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
+                                  onPressed: () => _deleteFromCart(product),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       );
                     },
-                  ),
+                  )
                 ),
               ),
-
             // Tổng tiền + nút đặt hàng
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -274,7 +300,20 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   ElevatedButton.icon(
-                    onPressed: _total > 0 ? () {} : null,
+                    onPressed: _total > 0
+                        ? () {
+                            final selectedProducts = _products.where((p) => _cart.containsKey(p.id)).toList();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OrderConfirmationScreen(
+                                  products: selectedProducts,
+                                  cart: Map.from(_cart)
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
                     icon: const Icon(Icons.shopping_cart_checkout),
                     label: const Text('Đặt hàng'),
                     style: ElevatedButton.styleFrom(

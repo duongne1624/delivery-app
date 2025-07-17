@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -8,9 +10,16 @@ import 'routes/routes.dart';
 import 'services/dio_service.dart';
 import 'theme/app_background.dart';
 import 'theme/theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('vi_VN', null);
+   if (Platform.isAndroid) {
+    WebViewPlatform.instance = AndroidWebViewPlatform();
+  }
   await DioService.init();
   
   runApp(
