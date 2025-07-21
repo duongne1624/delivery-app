@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../routes/app_navigator.dart';
 import '../../theme/theme_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -55,7 +56,11 @@ class ProfileScreen extends StatelessWidget {
           // Danh sách menu
           const _MenuTile(title: 'Cập nhật hồ sơ', icon: Icons.edit),
           const _MenuTile(title: 'Lịch sử đơn hàng', icon: Icons.receipt_long),
-          const _MenuTile(title: 'Địa chỉ giao hàng', icon: Icons.location_on),
+          _MenuTile(
+            title: 'Địa chỉ giao hàng',
+            icon: Icons.location_on,
+            onTap: () => AppNavigator.toUserAddresses(context),
+          ),
           const _MenuTile(title: 'Đổi mật khẩu', icon: Icons.lock),
           const _MenuTile(title: 'Liên hệ hỗ trợ', icon: Icons.support_agent),
           const _MenuTile(title: 'Điều khoản & Chính sách', icon: Icons.privacy_tip),
@@ -117,8 +122,13 @@ class ProfileScreen extends StatelessWidget {
 class _MenuTile extends StatelessWidget {
   final String title;
   final IconData icon;
+  final VoidCallback? onTap;
 
-  const _MenuTile({required this.title, required this.icon});
+  const _MenuTile({
+    required this.title,
+    required this.icon,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -129,9 +139,7 @@ class _MenuTile extends StatelessWidget {
       leading: Icon(icon, color: colorScheme.primary),
       title: Text(title, style: theme.textTheme.bodyMedium),
       trailing: Icon(Icons.chevron_right, color: colorScheme.onSurface.withOpacity(0.6)),
-      onTap: () {
-        // TODO: điều hướng đến màn hình tương ứng
-      },
+      onTap: onTap,
     );
   }
 }

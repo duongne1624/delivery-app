@@ -7,6 +7,7 @@ import '../screens/auth/splash_screen.dart';
 import '../screens/product/top_products_screen.dart';
 import '../screens/restaurant/restaurant_detail_screen.dart';
 import '../screens/restaurant/top_restaurants_screen.dart';
+import '../screens/address/user_address_screen.dart';
 import '../screens/main_layout.dart';
 
 class AppRoutes {
@@ -23,6 +24,7 @@ class AppRoutes {
   static const String search = '/search';
   static const String restaurantDetail = '/restaurant/detail';
   static const String orderDetail = '/orders/detail';
+  static const String userAddresses = '/user/addresses';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -57,6 +59,8 @@ class AppRoutes {
       case orderDetail:
         final id = settings.arguments as String;
         return MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id));
+      case userAddresses:
+        return MaterialPageRoute(builder: (_) => const UserAddressScreen());
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

@@ -55,4 +55,9 @@ class AppNavigator {
       arguments: orderId,
     );
   }
+
+  static void toUserAddresses(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.userAddresses);
+  }
+  
 }
