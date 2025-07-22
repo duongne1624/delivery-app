@@ -1,6 +1,8 @@
 import 'package:delivery_online_app/screens/order/order_detail_screen.dart';
 import 'package:delivery_online_app/screens/search/restaurant_search_delegate.dart';
 import 'package:flutter/material.dart';
+import '../models/user_address_model.dart';
+import '../screens/address/add_edit_user_address_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/auth/splash_screen.dart';
@@ -25,6 +27,7 @@ class AppRoutes {
   static const String restaurantDetail = '/restaurant/detail';
   static const String orderDetail = '/orders/detail';
   static const String userAddresses = '/user/addresses';
+  static const String addEditAddress = '/user/addresses/add-edit';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -61,6 +64,11 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: id));
       case userAddresses:
         return MaterialPageRoute(builder: (_) => const UserAddressScreen());
+      case addEditAddress:
+        final address = settings.arguments as UserAddress?;
+        return MaterialPageRoute(
+          builder: (_) => AddEditUserAddressScreen(address: address),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => const Scaffold(

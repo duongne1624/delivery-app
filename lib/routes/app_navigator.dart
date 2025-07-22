@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../models/user_address_model.dart';
 import 'routes.dart';
 
 class AppNavigator {
@@ -60,4 +61,8 @@ class AppNavigator {
     Navigator.pushNamed(context, AppRoutes.userAddresses);
   }
   
+  static Future<dynamic> toAddEditAddress(BuildContext context, {UserAddress? address}) {
+    return Navigator.pushNamed(context, AppRoutes.addEditAddress, arguments: address);
+  }
+
 }

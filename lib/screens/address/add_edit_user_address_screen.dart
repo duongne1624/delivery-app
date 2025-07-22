@@ -5,9 +5,9 @@ import '../../services/user_address_service.dart';
 import 'map_location_picker.dart';
 
 class AddEditUserAddressScreen extends StatefulWidget {
-  final UserAddress? existing;
+  final UserAddress? address;
 
-  const AddEditUserAddressScreen({super.key, this.existing});
+  const AddEditUserAddressScreen({super.key, this.address});
 
   @override
   State<AddEditUserAddressScreen> createState() => _AddEditUserAddressScreenState();
@@ -28,8 +28,8 @@ class _AddEditUserAddressScreenState extends State<AddEditUserAddressScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.existing != null) {
-      final a = widget.existing!;
+    if (widget.address != null) {
+      final a = widget.address!;
       _nameController.text = a.name;
       _noteController.text = a.note ?? '';
       _address = a.address;
@@ -64,35 +64,37 @@ class _AddEditUserAddressScreenState extends State<AddEditUserAddressScreen> {
       return;
     }
 
-    final data = {
-      'name': _nameController.text.trim(),
-      'note': _noteController.text.trim(),
-      'address': _address,
-      'latitude': _latitude,
-      'longitude': _longitude,
-      'place_id': _placeId,
-      'is_default': _isDefault,
-    };
+    final address = UserAddress(
+      id: widget.address?.id ?? '',
+      name: _nameController.text.trim(),
+      note: _noteController.text.trim(),
+      address: _address!,
+      latitude: _latitude!,
+      longitude: _longitude!,
+      placeId: _placeId ?? '',
+      isDefault: _isDefault,
+    );
 
     try {
-      if (widget.existing == null) {
-        await _service.createAddress(data);
+      if (widget.address == null) {
+        await _service.createAddress(address);
         Fluttertoast.showToast(msg: 'Thêm địa chỉ thành công');
       } else {
-        await _service.updateAddress(widget.existing!.id, data);
+        await _service.updateAddress(widget.address!.id, address);
         Fluttertoast.showToast(msg: 'Cập nhật địa chỉ thành công');
       }
 
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       Fluttertoast.showToast(msg: 'Lỗi: $e');
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.existing == null ? 'Thêm địa chỉ' : 'Chỉnh sửa địa chỉ')),
+      appBar: AppBar(title: Text(widget.address == null ? 'Thêm địa chỉ' : 'Chỉnh sửa địa chỉ')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -130,7 +132,7 @@ class _AddEditUserAddressScreenState extends State<AddEditUserAddressScreen> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _submit,
-                child: Text(widget.existing == null ? 'Thêm địa chỉ' : 'Cập nhật địa chỉ'),
+                child: Text(widget.address == null ? 'Thêm địa chỉ' : 'Cập nhật địa chỉ'),
               )
             ],
           ),
