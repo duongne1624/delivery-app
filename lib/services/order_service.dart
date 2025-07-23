@@ -6,6 +6,9 @@ class OrderService {
   static Future<Map<String, dynamic>> createOrder({
     required List<Map<String, dynamic>> items,
     required String deliveryAddress,
+    double? latitude,
+    double? longitude,
+    String? placeId,
     String? note,
     required String paymentMethod,
   }) async {
@@ -14,6 +17,9 @@ class OrderService {
       data: {
         'items': items,
         'delivery_address': deliveryAddress,
+        'delivery_latitude': latitude,
+        'delivery_longitude': longitude,
+        'delivery_place_id': placeId,
         'note': note,
         'payment_method': paymentMethod,
       },

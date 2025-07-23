@@ -8,13 +8,29 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Row(
       children: [
-        Text(title, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+        Text(
+          title,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w900,
+            color: Color(0xFFFFB074),
+            fontSize: 22,
+            fontFamily: 'Poppins',
+          ),
+        ),
         const Spacer(),
-        GestureDetector(
-          onTap: onTap,
-          child: const Icon(Icons.arrow_forward_ios, size: 24),
+        Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(18),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(6),
+              child: Icon(Icons.arrow_forward_ios, size: 26, color: Color(0xFFFFB074), weight: 700),
+            ),
+          ),
         ),
       ],
     );

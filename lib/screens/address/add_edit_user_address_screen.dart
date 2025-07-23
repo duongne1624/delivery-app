@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../models/user_address_model.dart';
+import '../../routes/app_navigator.dart';
 import '../../services/user_address_service.dart';
-import 'map_location_picker.dart';
 
 class AddEditUserAddressScreen extends StatefulWidget {
   final UserAddress? address;
@@ -41,21 +41,21 @@ class _AddEditUserAddressScreenState extends State<AddEditUserAddressScreen> {
   }
 
   void _pickLocation() async {
-    Navigator.push(
+    final result = await AppNavigator.toMapLocationPicker(
       context,
-      MaterialPageRoute(
-        builder: (_) => MapLocationPicker(
-          onSelected: (address, lat, lng, placeId) {
-            setState(() {
-              _address = address;
-              _latitude = lat;
-              _longitude = lng;
-              _placeId = placeId;
-            });
-          },
-        ),
-      ),
+      initialAddress: _address,
+      initialLatitude: _latitude,
+      initialLongitude: _longitude,
     );
+
+    if (result != null && result is Map<String, dynamic>) {
+      setState(() {
+        _address = result['address'] as String;
+        _latitude = result['latitude'] as double;
+        _longitude = result['longitude'] as double;
+        _placeId = result['placeId'] as String?;
+      });
+    }
   }
 
   void _submit() async {
@@ -87,8 +87,14 @@ class _AddEditUserAddressScreenState extends State<AddEditUserAddressScreen> {
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       Fluttertoast.showToast(msg: 'Lỗi: $e');
-      print(e);
     }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _noteController.dispose();
+    super.dispose();
   }
 
   @override

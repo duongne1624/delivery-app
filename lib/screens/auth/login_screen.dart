@@ -61,118 +61,139 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
-    InputDecoration _inputDecoration({required String hint, required IconData icon}) {
-      return InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black54),
-        prefixIcon: Icon(icon, color: Colors.black45),
-        filled: true,
-        fillColor: Colors.transparent,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: Colors.black26.withOpacity(0.2), width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: AppTheme.primaryColor.withOpacity(0.6), width: 1.2),
-        ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      );
-    }
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.fastfood, size: 72, color: AppTheme.primaryColor),
-                const SizedBox(height: 12),
-                Text(
-                  'Foodie App',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: isDark
+              ? LinearGradient(
+                  colors: [theme.colorScheme.background, theme.colorScheme.surface],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                )
+              : const LinearGradient(
+                  colors: [Color(0xFFFFB074), Color(0xFFFDE8D0)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-                Text(
-                  'Đặt món nhanh chóng & dễ dàng',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: Colors.black54),
-                ),
-                const SizedBox(height: 36),
-
-                // SĐT
-                AppTextField(
-                  controller: phoneCtrl,
-                  hintText: 'Số điện thoại',
-                  icon: Icons.phone,
-                  keyboardType: TextInputType.phone,
-                ),
-
-                const SizedBox(height: 12),
-                // Mật khẩu
-                AppTextField(
-                  controller: passCtrl,
-                  hintText: 'Mật khẩu',
-                  icon: Icons.lock,
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 12),
-
-                // Nhớ mật khẩu + Quên
-                Row(
-                  children: [
-                    Checkbox(
-                      value: rememberMe,
-                      onChanged: (val) => setState(() => rememberMe = val ?? false),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                    ),
-                    const Text('Ghi nhớ'),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text('Quên mật khẩu?',
-                          style: TextStyle(color: Colors.redAccent)),
+        ),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: isDark ? theme.colorScheme.surface.withOpacity(0.98) : Colors.white.withOpacity(0.95),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: isDark ? Colors.black54 : Colors.black12,
+                      blurRadius: 16,
+                      offset: Offset(0, 8),
                     ),
                   ],
                 ),
-                const SizedBox(height: 8),
-
-                // Nút đăng nhập
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : AppButton(
-                          label: 'Đăng nhập',
-                          onPressed: _login,
-                          isLoading: isLoading,
-                          icon: Icons.login,
-                        )
-                ),
-
-                const SizedBox(height: 24),
-
-                // Đăng ký
-                Row(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Chưa có tài khoản?"),
-                    TextButton(
-                      onPressed: () => AppNavigator.toRegister(context),
-                      child: const Text("Đăng ký ngay"),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: isDark
+                            ? LinearGradient(
+                                colors: [theme.colorScheme.primary, theme.colorScheme.secondary],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : const LinearGradient(
+                                colors: [AppTheme.primaryColor, Colors.orangeAccent],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Icon(Icons.fastfood, size: 64, color: isDark ? Colors.white : Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Foodie App',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: isDark ? theme.colorScheme.primary : AppTheme.primaryColor,
+                        fontSize: 28,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    Text(
+                      'Đặt món nhanh chóng & dễ dàng',
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: isDark ? theme.colorScheme.onSurface : Colors.black87,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    AppTextField(
+                      controller: phoneCtrl,
+                      hintText: 'Số điện thoại',
+                      icon: Icons.phone,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 16),
+                    AppTextField(
+                      controller: passCtrl,
+                      hintText: 'Mật khẩu',
+                      icon: Icons.lock,
+                      obscureText: true,
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Checkbox(
+                          value: rememberMe,
+                          onChanged: (val) => setState(() => rememberMe = val ?? false),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                          activeColor: isDark ? theme.colorScheme.primary : AppTheme.primaryColor,
+                        ),
+                        Text('Ghi nhớ', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: isDark ? theme.colorScheme.onSurface : null)),
+                        const Spacer(),
+                        TextButton(
+                          onPressed: () {},
+                          child: Text('Quên mật khẩu?', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: isLoading
+                          ? Center(child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : null))
+                          : AppButton(
+                              label: 'Đăng nhập',
+                              onPressed: _login,
+                              isLoading: isLoading,
+                              icon: Icons.login,
+                            ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Chưa có tài khoản?", style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, color: isDark ? theme.colorScheme.onSurface : null)),
+                        TextButton(
+                          onPressed: () => AppNavigator.toRegister(context),
+                          child: Text("Đăng ký ngay", style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? theme.colorScheme.primary : AppTheme.primaryColor, fontWeight: FontWeight.bold)),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

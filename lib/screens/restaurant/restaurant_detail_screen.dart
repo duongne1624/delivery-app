@@ -114,13 +114,21 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     final selectedProducts = _products.where((p) => _cart.containsKey(p.id)).toList();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Chi tiết nhà hàng')),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+        title: Text('Chi tiết nhà hàng', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
+      ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange))
           : Column(
               children: [
                 Expanded(
@@ -138,40 +146,80 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                               ? const SizedBox()
                               : Padding(
                                   padding: const EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(16),
-                                        child: Image.network(
-                                          _restaurant!.image,
-                                          height: 180,
-                                          width: double.infinity,
-                                          fit: BoxFit.cover,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: isDark ? theme.colorScheme.surface.withOpacity(0.98) : Colors.white,
+                                      borderRadius: BorderRadius.circular(18),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: isDark ? Colors.black38 : Colors.black12,
+                                          blurRadius: 12,
+                                          offset: Offset(0, 6),
                                         ),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        _restaurant!.name,
-                                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        _restaurant!.address,
-                                        style: theme.textTheme.bodyMedium,
-                                      ),
-                                      const SizedBox(height: 16),
-                                    ],
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Stack(
+                                          children: [
+                                            ClipRRect(
+                                              borderRadius: BorderRadius.circular(16),
+                                              child: Image.network(
+                                                _restaurant!.image,
+                                                height: 180,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) => Container(
+                                                  color: isDark ? theme.colorScheme.surface : Colors.grey[300],
+                                                  alignment: Alignment.center,
+                                                  child: Icon(Icons.broken_image, color: isDark ? theme.colorScheme.primary : Colors.grey),
+                                                ),
+                                              ),
+                                            ),
+                                            Positioned(
+                                              right: 16,
+                                              top: 16,
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                                decoration: BoxDecoration(
+                                                  color: isDark ? theme.colorScheme.primary.withOpacity(0.85) : Colors.deepOrange.withOpacity(0.85),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.star, color: Colors.yellowAccent, size: 18),
+                                                    const SizedBox(width: 4),
+                                                    // Text('${_restaurant!.rating.toStringAsFixed(1)}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          _restaurant!.name,
+                                          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 22),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          _restaurant!.address,
+                                          style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? theme.colorScheme.primary : Colors.deepOrange, fontWeight: FontWeight.w600),
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                    ),
                                   ),
                                 ),
                         ),
                         SliverPadding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                           sliver: SliverGrid(
                             delegate: SliverChildBuilderDelegate(
                               (context, index) {
                                 if (index >= _products.length) {
-                                  return const Center(child: CircularProgressIndicator());
+                                  return Center(child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange));
                                 }
                                 final p = _products[index];
                                 return ProductItemCard(
@@ -183,9 +231,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                             ),
                             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              childAspectRatio: 0.75,
-                              crossAxisSpacing: 12,
-                              mainAxisSpacing: 12,
+                              childAspectRatio: 0.78,
+                              crossAxisSpacing: 14,
+                              mainAxisSpacing: 14,
                             ),
                           ),
                         ),
@@ -193,11 +241,18 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     ),
                   ),
                 ),
-              ]
-          ),
+              ],
+            ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: isDark ? theme.colorScheme.surface : Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: isDark ? Colors.black38 : Colors.black12,
+              blurRadius: 10,
+              offset: Offset(0, -2),
+            ),
+          ],
           border: Border(top: BorderSide(color: theme.dividerColor)),
         ),
         child: Column(
@@ -205,7 +260,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
           children: [
             if (_cart.isNotEmpty)
               Container(
-                color: theme.colorScheme.surface.withOpacity(0.95),
+                color: isDark ? theme.colorScheme.surface.withOpacity(0.97) : Colors.white.withOpacity(0.97),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 180),
                   child: ListView.separated(
@@ -222,12 +277,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                       return Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+                          color: isDark ? theme.colorScheme.surfaceVariant.withOpacity(0.13) : theme.colorScheme.surfaceVariant.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
                           children: [
-                            // Ảnh sản phẩm
                             ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.network(
@@ -235,35 +289,34 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                                 width: 48,
                                 height: 48,
                                 fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => Container(
+                                  color: isDark ? theme.colorScheme.surface : Colors.grey[300],
+                                  alignment: Alignment.center,
+                                  child: Icon(Icons.broken_image, color: isDark ? theme.colorScheme.primary : Colors.grey),
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),
-
-                            // Thông tin sản phẩm
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     product.name,
-                                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                                    style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700, fontSize: 15),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     '${product.price.toStringAsFixed(0)} đ x $quantity',
-                                    style: theme.textTheme.bodySmall?.copyWith(color: Colors.grey),
+                                    style: theme.textTheme.bodySmall?.copyWith(color: isDark ? theme.colorScheme.primary : Colors.deepOrange),
                                   ),
                                 ],
                               ),
                             ),
-
-                            // Tổng
                             Text(
                               '${itemTotal.toStringAsFixed(0)} đ',
-                              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+                              style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
                             ),
-
-                            // Hành động
                             const SizedBox(width: 8),
                             Row(
                               children: [
@@ -286,10 +339,9 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         ),
                       );
                     },
-                  )
+                  ),
                 ),
               ),
-            // Tổng tiền + nút đặt hàng
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -297,7 +349,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 children: [
                   Text(
                     'Tổng: ${_total.toStringAsFixed(0)} đ',
-                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   ElevatedButton.icon(
                     onPressed: _total > 0
@@ -319,6 +371,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                   ),
                 ],

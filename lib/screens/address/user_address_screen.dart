@@ -77,50 +77,92 @@ class _UserAddressScreenState extends State<UserAddressScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Địa chỉ giao hàng')),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+        title: Row(
+          children: [
+            Icon(Icons.location_on, color: isDark ? theme.colorScheme.primary : Colors.deepOrange, size: 26),
+            const SizedBox(width: 8),
+            Text('Địa chỉ giao hàng', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
+      ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange))
           : _addresses.isEmpty
-              ? const Center(child: Text('Chưa có địa chỉ nào'))
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.inbox, size: 64, color: isDark ? theme.colorScheme.primary : Colors.deepOrange),
+                      const SizedBox(height: 12),
+                      Text('Chưa có địa chỉ nào', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Text('Hãy thêm địa chỉ để giao hàng nhanh hơn.', style: theme.textTheme.bodyMedium),
+                    ],
+                  ),
+                )
               : ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
                   itemCount: _addresses.length,
                   itemBuilder: (context, index) {
                     final address = _addresses[index];
-                    return ListTile(
-                      leading: Icon(
-                        address.isDefault ? Icons.star : Icons.location_on,
-                        color: address.isDefault ? Colors.orange : null,
-                      ),
-                      title: Text(address.name),
-                      subtitle: Text(address.address),
-                      trailing: PopupMenuButton(
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            _navigateToAddEdit(address: address);
-                          } else if (value == 'delete') {
-                            _showConfirmDelete(address.id);
-                          } else if (value == 'default') {
-                            _setDefault(address.id);
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          const PopupMenuItem(
-                              value: 'edit', child: Text('Chỉnh sửa')),
-                          const PopupMenuItem(
-                              value: 'delete', child: Text('Xoá')),
-                          if (!address.isDefault)
-                            const PopupMenuItem(
-                                value: 'default',
-                                child: Text('Đặt làm mặc định')),
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 14),
+                      decoration: BoxDecoration(
+                        color: isDark ? theme.colorScheme.surface.withOpacity(0.98) : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: isDark ? Colors.black26 : Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
+                          ),
                         ],
+                      ),
+                      child: ListTile(
+                        leading: Icon(
+                          address.isDefault ? Icons.star : Icons.location_on,
+                          color: address.isDefault ? (isDark ? theme.colorScheme.primary : Colors.orange) : (isDark ? theme.colorScheme.primary : Colors.deepOrange),
+                          size: 30,
+                        ),
+                        title: Text(address.name, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+                        subtitle: Text(address.address, style: theme.textTheme.bodyMedium),
+                        trailing: PopupMenuButton(
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              _navigateToAddEdit(address: address);
+                            } else if (value == 'delete') {
+                              _showConfirmDelete(address.id);
+                            } else if (value == 'default') {
+                              _setDefault(address.id);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(value: 'edit', child: Text('Chỉnh sửa')),
+                            const PopupMenuItem(value: 'delete', child: Text('Xoá')),
+                            if (!address.isDefault)
+                              const PopupMenuItem(value: 'default', child: Text('Đặt làm mặc định')),
+                          ],
+                        ),
                       ),
                     );
                   },
                 ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: isDark ? theme.colorScheme.primary : Colors.deepOrange,
+        foregroundColor: Colors.white,
+        elevation: 4,
         onPressed: () => _navigateToAddEdit(),
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add, size: 28),
       ),
     );
   }

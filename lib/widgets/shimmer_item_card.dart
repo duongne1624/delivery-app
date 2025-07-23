@@ -9,19 +9,40 @@ class ShimmerItemCard extends StatelessWidget {
     return Shimmer.fromColors(
       baseColor: Colors.grey.shade300,
       highlightColor: Colors.grey.shade100,
+      period: const Duration(milliseconds: 1200),
       child: Container(
-        width: 140,
-        margin: const EdgeInsets.only(right: 12),
+        width: 150,
+        margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(22),
         ),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 100, width: double.infinity, color: Colors.white),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text(''),
+            Container(
+              height: 90,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 14, 2),
+              child: Container(
+                height: 18,
+                width: 80,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
+              child: Container(
+                height: 14,
+                width: 50,
+                color: Colors.white,
+              ),
             ),
           ],
         ),

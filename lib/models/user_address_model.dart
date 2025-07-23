@@ -2,11 +2,11 @@ class UserAddress {
   final String id;
   final String name;
   final String address;
+  final bool isDefault;
   final double latitude;
   final double longitude;
   final String? placeId;
   final String? note;
-  final bool isDefault;
 
   UserAddress({
     required this.id,
@@ -15,20 +15,20 @@ class UserAddress {
     required this.latitude,
     required this.longitude,
     this.placeId,
-    this.note,
     required this.isDefault,
+    this.note,
   });
 
   factory UserAddress.fromJson(Map<String, dynamic> json) {
     return UserAddress(
-      id: json['id'],
-      name: json['name'],
-      address: json['address'],
-      latitude: double.parse(json['latitude'].toString()),
-      longitude: double.parse(json['longitude'].toString()),
-      placeId: json['place_id'],
-      note: json['note'],
-      isDefault: json['is_default'],
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      address: json['address']?.toString() ?? '',
+      latitude: double.tryParse(json['latitude']?.toString() ?? '') ?? 0.0,
+      longitude: double.tryParse(json['longitude']?.toString() ?? '') ?? 0.0,
+      placeId: json['place_id']?.toString(),
+      isDefault: json['is_default'] == true || json['is_default'] == 1,
+      note: json['note']?.toString(),
     );
   }
 
@@ -39,8 +39,8 @@ class UserAddress {
       'latitude': latitude,
       'longitude': longitude,
       'place_id': placeId,
-      'note': note,
       'is_default': isDefault,
+      'note': note,
     };
   }
 }

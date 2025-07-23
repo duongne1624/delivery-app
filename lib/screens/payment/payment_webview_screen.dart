@@ -70,13 +70,41 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Thanh toán đơn hàng')),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+        title: Row(
+          children: [
+            Icon(Icons.payment, color: isDark ? theme.colorScheme.primary : Colors.deepOrange, size: 26),
+            const SizedBox(width: 8),
+            Text('Thanh toán đơn hàng', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
+      ),
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
           if (_isLoading)
-            const Center(child: CircularProgressIndicator()),
+            Container(
+              color: isDark ? Colors.black.withOpacity(0.18) : Colors.white.withOpacity(0.18),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange),
+                    const SizedBox(height: 18),
+                    Text('Đang tải trang thanh toán...', style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600)),
+                  ],
+                ),
+              ),
+            ),
         ],
       ),
     );

@@ -22,35 +22,47 @@ class AppButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final bgColor = backgroundColor ?? theme.colorScheme.onBackground;
-    final fgColor = textColor ?? theme.colorScheme.onPrimary;
+    final bgColor = backgroundColor ?? theme.primaryColor;
+    final fgColor = textColor ?? Colors.white;
 
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: 52,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
           foregroundColor: fgColor,
+          elevation: 4,
+          shadowColor: bgColor.withOpacity(0.25),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(18),
           ),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
         ),
         child: isLoading
             ? const SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                width: 28,
+                height: 28,
+                child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
               )
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (icon != null) ...[
-                    Icon(icon, size: 18, color: fgColor),
-                    const SizedBox(width: 8),
+                    Icon(icon, size: 22, color: fgColor, weight: 700),
+                    const SizedBox(width: 10),
                   ],
-                  Text(label, style: TextStyle(fontSize: 16, color: fgColor)),
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: fgColor,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.1,
+                      fontFamily: 'Poppins',
+                    ),
+                  ),
                 ],
               ),
       ),

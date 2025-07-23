@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/user_address_model.dart';
+import '../screens/address/map_location_picker.dart';
 import 'routes.dart';
 
 class AppNavigator {
@@ -60,9 +61,26 @@ class AppNavigator {
   static void toUserAddresses(BuildContext context) {
     Navigator.pushNamed(context, AppRoutes.userAddresses);
   }
-  
+
   static Future<dynamic> toAddEditAddress(BuildContext context, {UserAddress? address}) {
     return Navigator.pushNamed(context, AppRoutes.addEditAddress, arguments: address);
   }
 
+  static Future<dynamic> toMapLocationPicker(
+    BuildContext context, {
+    String? initialAddress,
+    double? initialLatitude,
+    double? initialLongitude,
+  }) {
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MapLocationPicker(
+          initialAddress: initialAddress,
+          initialLatitude: initialLatitude,
+          initialLongitude: initialLongitude,
+        ),
+      ),
+    );
+  }
 }

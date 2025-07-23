@@ -64,33 +64,48 @@ class _TopRestaurantsScreenState extends State<TopRestaurantsScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Nhà hàng bán chạy')),
-      body: ListView.builder(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(12),
-        itemCount: _restaurants.length + (_hasMore ? 1 : 0),
-        itemBuilder: (_, i) {
-          if (i < _restaurants.length) {
-            final item = _restaurants[i];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: ItemCard(
-                title: item.name,
-                subtitle: item.address,
-                imageUrl: item.image,
-                onTap: () => AppNavigator.toRestaurantDetail(context, item.id),
-              ),
-            );
-          } else {
-            return const Center(child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: CircularProgressIndicator(),
-            ));
-          }
-        },
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
+        title: Text('Nhà hàng bán chạy', style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(18)),
+        ),
       ),
+      body: _restaurants.isEmpty && _loading
+          ? Center(child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange))
+          : GridView.builder(
+              controller: _scrollController,
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 18,
+                crossAxisSpacing: 18,
+                childAspectRatio: 0.82,
+              ),
+              itemCount: _restaurants.length + (_hasMore ? 1 : 0),
+              itemBuilder: (_, i) {
+                if (i < _restaurants.length) {
+                  final item = _restaurants[i];
+                  return ItemCard(
+                    title: item.name,
+                    subtitle: item.address,
+                    imageUrl: item.image,
+                    onTap: () => AppNavigator.toRestaurantDetail(context, item.id),
+                  );
+                } else {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: CircularProgressIndicator(color: isDark ? theme.colorScheme.primary : Colors.deepOrange),
+                    ),
+                  );
+                }
+              },
+            ),
     );
   }
 }

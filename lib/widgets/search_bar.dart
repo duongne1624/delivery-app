@@ -26,35 +26,54 @@ class _SearchBarWidgetState extends State<SearchBarWidget> {
 
     if (widget.isLoading) {
       return Shimmer.fromColors(
-        baseColor: theme.colorScheme.surface.withOpacity(0.3),
-        highlightColor: theme.colorScheme.surface.withOpacity(0.1),
+        baseColor: Colors.grey.shade300,
+        highlightColor: Colors.grey.shade100,
         child: Container(
-          height: 50,
+          height: 54,
+          margin: const EdgeInsets.symmetric(vertical: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(14),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
           ),
         ),
       );
     }
 
-    return TextField(
-      controller: _controller,
-      textInputAction: TextInputAction.search,
-      onSubmitted: _handleSearch,
-      style: theme.textTheme.bodyMedium,
-      decoration: InputDecoration(
-        hintText: 'Tìm kiếm quán ăn...',
-        prefixIcon: IconButton(
-          icon: Icon(Icons.search, color: theme.iconTheme.color),
-          onPressed: () => _handleSearch(_controller.text),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 220),
+      child: TextField(
+        controller: _controller,
+        textInputAction: TextInputAction.search,
+        onSubmitted: _handleSearch,
+        style: theme.textTheme.bodyMedium?.copyWith(
+          fontWeight: FontWeight.w700,
+          fontSize: 16,
+          fontFamily: 'Poppins',
         ),
-        filled: true,
-        fillColor: theme.inputDecorationTheme.fillColor,
-        contentPadding: theme.inputDecorationTheme.contentPadding,
-        border: theme.inputDecorationTheme.border,
-        focusedBorder: theme.inputDecorationTheme.focusedBorder,
-        hintStyle: theme.inputDecorationTheme.hintStyle,
+        decoration: InputDecoration(
+          hintText: 'Tìm kiếm quán ăn...',
+          prefixIcon: Icon(Icons.search, color: Color(0xFFFFB074), size: 26, weight: 700),
+          filled: true,
+          fillColor: Colors.transparent,
+          contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: Color(0xFFFFB074).withOpacity(0.18)),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: Color(0xFFFFB074).withOpacity(0.18)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide(color: Color(0xFFFFB074), width: 2.2),
+          ),
+          hintStyle: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontFamily: 'Poppins',
+          ),
+        ),
       ),
     );
   }

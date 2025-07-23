@@ -8,18 +8,24 @@ class HorizontalList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 160,
+      height: 180,
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 4),
         itemCount: items.length,
         itemBuilder: (_, i) {
           return AnimatedOpacity(
             opacity: 1.0,
-            duration: Duration(milliseconds: 300 + i * 100),
-            child: items[i],
+            duration: Duration(milliseconds: 350 + i * 120),
+            curve: Curves.easeInOut,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: items[i],
+            ),
           );
         },
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        separatorBuilder: (_, __) => const SizedBox(width: 16),
       ),
     );
   }

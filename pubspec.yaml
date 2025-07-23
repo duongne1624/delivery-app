@@ -22,6 +22,7 @@ dependencies:
   webview_flutter_android: ^3.16.4
   google_maps_flutter: ^2.12.3
   geolocator: ^10.1.0
+  geocoding: ^3.0.0
   google_place: ^0.4.7
   fluttertoast: ^8.2.4
 
