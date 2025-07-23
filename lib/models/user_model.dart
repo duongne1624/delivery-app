@@ -30,4 +30,15 @@ class UserModel {
           : (json['is_active']?.toString().toLowerCase() == 'true'),
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'phone': phone,
+      'email': email,
+      'image': image,
+      'role': role,
+      'is_active': isActive,
+    };
+  }
 }

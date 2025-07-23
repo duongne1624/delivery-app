@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import '../../models/product_model.dart';
+import '../../models/user_address_model.dart';
+import '../../routes/app_navigator.dart';
 import '../../services/order_service.dart';
+import '../../services/user_address_service.dart';
 import '../payment/payment_webview_screen.dart';
 import 'order_detail_screen.dart';
 
@@ -19,10 +23,11 @@ class OrderConfirmationScreen extends StatefulWidget {
 }
 
 class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
-  final _addressController = TextEditingController();
   final _noteController = TextEditingController();
   String _selectedPaymentMethod = 'cod';
   bool _isLoading = false;
+  UserAddress? _selectedAddress;
+  final _addressService = UserAddressService();
 
   double get _totalPrice {
     return widget.cart.entries.fold(0, (sum, entry) {
@@ -32,20 +37,90 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
   }
 
   @override
-  void dispose() {
-    _addressController.dispose();
-    _noteController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadDefaultAddress();
+  }
+
+  Future<void> _loadDefaultAddress() async {
+    try {
+      final addresses = await _addressService.getAddresses();
+      if (addresses.isNotEmpty && mounted) {
+        final defaultAddress = addresses.firstWhere(
+          (address) => address.isDefault,
+          orElse: () => addresses.first,
+        );
+        setState(() {
+          _selectedAddress = defaultAddress;
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Lỗi tải địa chỉ: $e');
+    }
+  }
+
+  Future<void> _selectAddress() async {
+    // Lấy danh sách địa chỉ đã lưu
+    final addresses = await _addressService.getAddresses();
+    if (!mounted) return;
+
+    // Hiển thị dialog chọn địa chỉ
+    final selected = await showModalBottomSheet<UserAddress?>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Chọn địa chỉ mới'),
+              leading: const Icon(Icons.add_location),
+              onTap: () async {
+                final result = await AppNavigator.toMapLocationPicker(context);
+                if (result != null && result is Map<String, dynamic> && mounted) {
+                  final newAddress = UserAddress(
+                    id: '',
+                    name: 'Địa chỉ mới',
+                    address: result['address'] as String,
+                    latitude: result['latitude'] as double,
+                    longitude: result['longitude'] as double,
+                    placeId: result['placeId'] as String?,
+                    isDefault: false,
+                  );
+                  Navigator.pop(context, newAddress);
+                }
+              },
+            ),
+            const Divider(),
+            Expanded(
+              child: ListView.builder(
+                itemCount: addresses.length,
+                itemBuilder: (context, index) {
+                  final address = addresses[index];
+                  return ListTile(
+                    title: Text(address.name),
+                    subtitle: Text(address.address, maxLines: 2, overflow: TextOverflow.ellipsis),
+                    leading: const Icon(Icons.location_on),
+                    trailing: address.isDefault ? const Icon(Icons.check_circle, color: Colors.green) : null,
+                    onTap: () => Navigator.pop(context, address),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    if (selected != null && mounted) {
+      setState(() {
+        _selectedAddress = selected;
+      });
+    }
   }
 
   Future<void> _placeOrder() async {
-    final address = _addressController.text.trim();
-    final note = _noteController.text.trim();
-
-    if (address.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập địa chỉ giao hàng')),
-      );
+    if (_selectedAddress == null) {
+      Fluttertoast.showToast(msg: 'Vui lòng chọn địa chỉ giao hàng');
       return;
     }
 
@@ -59,8 +134,11 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
       final res = await OrderService.createOrder(
         items: items,
-        deliveryAddress: address,
-        note: note,
+        deliveryAddress: _selectedAddress!.address,
+        latitude: _selectedAddress!.latitude,
+        longitude: _selectedAddress!.longitude,
+        placeId: _selectedAddress!.placeId,
+        note: _noteController.text.trim(),
         paymentMethod: _selectedPaymentMethod,
       );
 
@@ -71,13 +149,11 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
       widget.cart.clear();
 
       if (_selectedPaymentMethod == 'cod' || paymentUrl == null) {
-        // Đơn COD: chuyển thẳng tới chi tiết đơn
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId)),
           (route) => route.isFirst,
         );
       } else {
-        // Online: mở WebView thanh toán
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => PaymentWebViewScreen(
@@ -88,12 +164,16 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Đặt hàng thất bại: $e')),
-      );
+      Fluttertoast.showToast(msg: 'Đặt hàng thất bại: $e');
     } finally {
       setState(() => _isLoading = false);
     }
+  }
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
   }
 
   @override
@@ -171,14 +251,23 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
                   const SizedBox(height: 16),
                   // Địa chỉ giao hàng
-                  TextField(
-                    controller: _addressController,
-                    decoration: const InputDecoration(
-                      labelText: 'Địa chỉ giao hàng',
-                      border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.location_on_outlined),
+                  Text('Địa chỉ giao hàng', style: theme.textTheme.titleMedium),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: _selectAddress,
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.location_on_outlined),
+                      ),
+                      child: Text(
+                        _selectedAddress != null
+                            ? '${_selectedAddress!.name}: ${_selectedAddress!.address}'
+                            : 'Chọn địa chỉ giao hàng',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    maxLines: 2,
                   ),
                   const SizedBox(height: 12),
                   // Ghi chú
