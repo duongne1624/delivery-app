@@ -12,7 +12,6 @@ class CategoryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final categories = context.watch<HomeProvider>().categories;
 
-    // Chia thành từng trang 6 mục (2 hàng x 3 cột)
     final pages = <List<CategoryModel>>[];
     for (int i = 0; i < categories.length; i += 6) {
       pages.add(categories.sublist(i, i + 6 > categories.length ? categories.length : i + 6));
@@ -30,9 +29,9 @@ class CategoryGrid extends StatelessWidget {
             physics: const NeverScrollableScrollPhysics(),
             itemCount: items.length,
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3, // 3 cột
+              crossAxisCount: 3,
               mainAxisSpacing: 8,
-              crossAxisSpacing: 8,
+              crossAxisSpacing: 4,
               childAspectRatio: 0.9,
             ),
             itemBuilder: (context, index) {

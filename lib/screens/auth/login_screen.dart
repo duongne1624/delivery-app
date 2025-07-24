@@ -1,3 +1,6 @@
+import '../../services/notification_service_singleton.dart';
+import '../../models/notification_model.dart';
+import '../../providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,6 +42,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (success) {
       final user = context.read<AuthProvider>().user;
+      if (user != null) {
+        // Kết nối websocket notification
+        NotificationServiceSingleton.getInstance((NotificationModel notification) {
+          final provider = context.read<NotificationProvider>();
+          provider.addNotification(notification);
+        }).connect(user.id);
+      }
       if (user != null && user.role == 'shipper') {
         Navigator.of(context).pushReplacementNamed('/shipper');
       } else {

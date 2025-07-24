@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../models/category_model.dart';
-import '../models/restaurant_model.dart';
-import '../models/product_model.dart';
+import '../models/home_restaurant_model.dart';
+import '../models/home_product_model.dart';
 import '../services/dio_service.dart';
 
 class HomeProvider with ChangeNotifier {
   List<CategoryModel> categories = [];
-  List<RestaurantModel> topRestaurants = [];
-  List<ProductModel> topProducts = [];
+  List<HomeRestaurantModel> topRestaurants = [];
+  List<HomeProductModel> topProducts = [];
 
   bool isLoading = true;
 
@@ -27,8 +27,8 @@ class HomeProvider with ChangeNotifier {
       final productList = responses[2].data['data'] as List;
 
       categories = categoryList.map((e) => CategoryModel.fromJson(e)).toList();
-      topRestaurants = restaurantList.map((e) => RestaurantModel.fromJson(e)).toList();
-      topProducts = productList.map((e) => ProductModel.fromJson(e)).toList();
+      topRestaurants = restaurantList.map((e) => HomeRestaurantModel.fromJson(e)).toList();
+      topProducts = productList.map((e) => HomeProductModel.fromJson(e)).toList();
     } catch (e) {
       debugPrint('Error loading home data: $e');
     } finally {

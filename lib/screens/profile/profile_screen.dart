@@ -3,10 +3,27 @@ import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../routes/app_navigator.dart';
 import '../../theme/theme_provider.dart';
+import '../order/order_screen.dart';
+import 'update_profile_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
+  @override
+  State<ProfileScreen> createState() => ProfileScreenState();
+}
+
+class ProfileScreenState extends State<ProfileScreen> {
+  void _openOrderHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => OrderScreen()),
+    );
+  }
+  void reload() {
+    final auth = context.read<AuthProvider>();
+    auth.notifyListeners();
+  }
   @override
   Widget build(BuildContext context) {
     final user = context.watch<AuthProvider>().user;
@@ -78,7 +95,19 @@ class ProfileScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           // Danh sách menu
-          _ModernMenuTile(title: 'Cập nhật hồ sơ', icon: Icons.edit),
+          _ModernMenuTile(
+            title: 'Cập nhật hồ sơ',
+            icon: Icons.edit,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const UpdateProfileScreen()),
+            ),
+          ),
+          _ModernMenuTile(
+            title: 'Lịch sử đơn hàng',
+            icon: Icons.receipt_long,
+            onTap: _openOrderHistory,
+          ),
           _ModernMenuTile(
             title: 'Địa chỉ giao hàng',
             icon: Icons.location_on,

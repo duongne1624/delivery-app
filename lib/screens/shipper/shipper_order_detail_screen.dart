@@ -92,12 +92,33 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen> {
                 )),
                 const SizedBox(height: 24),
                 Center(
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.check_circle),
-                    label: _isConfirming ? const Text('Đang xác nhận...') : const Text('Xác nhận giao thành công'),
-                    style: ElevatedButton.styleFrom(minimumSize: const Size(200, 48)),
-                    onPressed: _isConfirming ? null : () => _confirmOrder(context, order),
-                  ),
+                  child: order.status == 'pending'
+                      ? ElevatedButton.icon(
+                          icon: const Icon(Icons.assignment_turned_in),
+                          label: _isConfirming ? const Text('Đang nhận...') : const Text('Nhận đơn'),
+                          style: ElevatedButton.styleFrom(minimumSize: const Size(200, 48)),
+                          onPressed: _isConfirming
+                              ? null
+                              : () async {
+                                  setState(() => _isConfirming = true);
+                                  final success = await ShipperService.acceptOrder(order.id);
+                                  setState(() => _isConfirming = false);
+                                  if (success) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Đã nhận đơn thành công!')));
+                                      Navigator.of(context).pop();
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nhận đơn thất bại!')));
+                                  }
+                                },
+                        )
+                      : ElevatedButton.icon(
+                          icon: const Icon(Icons.check_circle),
+                          label: _isConfirming ? const Text('Đang xác nhận...') : const Text('Xác nhận giao thành công'),
+                          style: ElevatedButton.styleFrom(minimumSize: const Size(200, 48)),
+                          onPressed: _isConfirming ? null : () => _confirmOrder(context, order),
+                        ),
                 ),
               ],
             ),

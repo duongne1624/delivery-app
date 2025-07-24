@@ -81,12 +81,8 @@ class OrderScreenState extends State<OrderScreen> with AutomaticKeepAliveClientM
 
   String _getStatusLabel(String status) {
     switch (status) {
-      case 'pending':
-        return 'Chờ xác nhận';
-      case 'delivering':
-        return 'Đang giao';
       case 'completed':
-        return 'Đã giao';
+        return 'Hoàn thành';
       case 'cancelled':
         return 'Đã hủy';
       default:
@@ -96,10 +92,6 @@ class OrderScreenState extends State<OrderScreen> with AutomaticKeepAliveClientM
 
   Color statusColor(String status) {
     switch (status) {
-      case 'pending':
-        return Colors.orange;
-      case 'delivering':
-        return Colors.blue;
       case 'completed':
         return Colors.green;
       case 'cancelled':
@@ -158,9 +150,7 @@ class OrderScreenState extends State<OrderScreen> with AutomaticKeepAliveClientM
               child: Row(
                 children: [
                   buildFilterTab('Tất cả', 'all'),
-                  buildFilterTab('Chờ xác nhận', 'pending'),
-                  buildFilterTab('Đang giao', 'delivering'),
-                  buildFilterTab('Đã giao', 'completed'),
+                  buildFilterTab('Hoàn thành', 'completed'),
                   buildFilterTab('Đã hủy', 'cancelled'),
                 ],
               ),

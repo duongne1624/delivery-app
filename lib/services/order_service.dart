@@ -30,7 +30,16 @@ class OrderService {
   // Lấy danh sách đơn hàng của người dùng
   static Future<List<OrderModel>> getMyOrders() async {
     final res = await DioService.instance.get(
-      '/orders/get-by-user',
+      '/orders/get-history',
+    );
+    final List data = res.data['data'];
+    return data.map((e) => OrderModel.fromJson(e)).toList();
+  }
+
+  // Lấy danh sách đơn hàng đang đặt mà chưa hoàn thành hoặc bị hủy
+  static Future<List<OrderModel>> getCurrentOrders() async {
+    final res = await DioService.instance.get(
+      '/orders/get-current',
     );
     final List data = res.data['data'];
     return data.map((e) => OrderModel.fromJson(e)).toList();

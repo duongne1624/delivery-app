@@ -27,7 +27,7 @@ class AppNavigator {
 
   static void toHome(BuildContext context) => toMain(context, index: 0);
   static void toOrders(BuildContext context) => toMain(context, index: 1);
-  static void toFavorites(BuildContext context) => toMain(context, index: 2);
+  static void toCurrentOrders(BuildContext context) => toMain(context, index: 2);
   static void toProfile(BuildContext context) => toMain(context, index: 3);
 
   static void toTopRestaurants(BuildContext context) {

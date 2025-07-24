@@ -19,6 +19,23 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+  Future<bool> updateProfile({required String name, String? email}) async {
+    try {
+      final res = await DioService.instance.put('/users/me', data: {
+        'name': name,
+        'email': email,
+      });
+      if (res.data['success'] == true) {
+        user = UserModel.fromJson(res.data['data']);
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future<bool> login(String phone, String password) async {
     try {
       final res = await DioService.instance.post('/auth/login', data: {

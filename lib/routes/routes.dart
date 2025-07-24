@@ -21,7 +21,7 @@ class AppRoutes {
   static const String home = '/home';
   static const String orders = '/orders';
   static const String profile = '/profile';
-  static const String favorite = '/favorite';
+  static const String currentOrders = '/current-orders';
   static const String topRestaurants = '/restaurants/top';
   static const String topProducts = '/products/top';
   static const String search = '/search';
@@ -42,12 +42,12 @@ class AppRoutes {
       case main:
       case home:
       case orders:
-      case favorite:
+      case currentOrders:
       case profile:
         final index = {
           home: 0,
           orders: 1,
-          favorite: 2,
+          currentOrders: 2,
           profile: 3,
           main: settings.arguments as int? ?? 0,
         }[settings.name]!;

@@ -3,8 +3,9 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DioService {
+  static const String baseUrl = kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000';
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: kIsWeb ? 'http://localhost:3000' : 'http://10.0.2.2:3000',
+    baseUrl: baseUrl,
     connectTimeout: Duration(seconds: 10),
     receiveTimeout: Duration(seconds: 10),
   ));

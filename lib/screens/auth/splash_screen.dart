@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/notification_provider.dart';
 import '../../routes/app_navigator.dart';
 import '../../theme/theme.dart';
+import '../../services/notification_service_singleton.dart';
+import '../../models/notification_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -28,8 +31,14 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (success) {
       final user = auth.user;
+      if (user != null) {
+        // Kết nối websocket notification
+        NotificationServiceSingleton.getInstance((NotificationModel notification) {
+          final provider = Provider.of<NotificationProvider>(context, listen: false);
+          provider.addNotification(notification);
+        }).connect(user.id);
+      }
       if (user != null && user.role == 'shipper') {
-        // Điều hướng đến navigation dành cho shipper
         AppNavigator.toShipper(context);
       } else {
         AppNavigator.toHome(context);

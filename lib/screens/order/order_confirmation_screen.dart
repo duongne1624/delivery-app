@@ -148,7 +148,7 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
 
       widget.cart.clear();
 
-      if (_selectedPaymentMethod == 'cod' || paymentUrl == null) {
+      if (_selectedPaymentMethod == 'cod') {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId)),
           (route) => route.isFirst,
