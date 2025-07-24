@@ -28,6 +28,8 @@ class OrderModel {
   final String status;
   final String deliveryAddress;
   final String? deliveryPlaceId;
+  final double? deliveryLatitude;
+  final double? deliveryLongitude;
   final String? note;
   final UserModel customer;
   final UserModel? shipper;
@@ -44,6 +46,8 @@ class OrderModel {
     required this.status,
     required this.deliveryAddress,
     this.deliveryPlaceId,
+    this.deliveryLatitude,
+    this.deliveryLongitude,
     this.note,
     required this.customer,
     this.shipper,
@@ -62,6 +66,8 @@ class OrderModel {
       status: json['status'] ?? 'unknown',
       deliveryAddress: json['delivery_address'] ?? '',
       deliveryPlaceId: json['delivery_place_id'],
+      deliveryLatitude: (json['delivery_latitude'] as num?)?.toDouble(),
+      deliveryLongitude: (json['delivery_longitude'] as num?)?.toDouble(),
       note: json['note'],
       customer: UserModel.fromJson(json['customer']),
       shipper: json['shipper'] != null ? UserModel.fromJson(json['shipper']) : null,
@@ -83,6 +89,8 @@ class OrderModel {
       'status': status,
       'delivery_address': deliveryAddress,
       'delivery_place_id': deliveryPlaceId,
+      'delivery_latitude': deliveryLatitude,
+      'delivery_longitude': deliveryLongitude,
       'note': note,
       'customer': customer.toJson(),
       'shipper_confirmed_at': shipperConfirmedAt?.toIso8601String(),

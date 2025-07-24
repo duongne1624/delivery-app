@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
@@ -20,7 +21,7 @@ void main() async {
 
   await initializeDateFormatting('vi_VN', null);
 
-  if (Platform.isAndroid) {
+  if (!kIsWeb && Platform.isAndroid) {
     WebViewPlatform.instance = AndroidWebViewPlatform();
   }
 

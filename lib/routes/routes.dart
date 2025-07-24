@@ -11,6 +11,7 @@ import '../screens/restaurant/restaurant_detail_screen.dart';
 import '../screens/restaurant/top_restaurants_screen.dart';
 import '../screens/address/user_address_screen.dart';
 import '../screens/main_layout.dart';
+import '../screens/shipper/shipper_navigation.dart';
 
 class AppRoutes {
   static const String splash = '/';
@@ -28,6 +29,7 @@ class AppRoutes {
   static const String orderDetail = '/orders/detail';
   static const String userAddresses = '/user/addresses';
   static const String addEditAddress = '/user/addresses/add-edit';
+  static const String shipper = '/shipper';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -50,6 +52,8 @@ class AppRoutes {
           main: settings.arguments as int? ?? 0,
         }[settings.name]!;
         return MaterialPageRoute(builder: (_) => MainLayout(initialIndex: index));
+      case shipper:
+        return MaterialPageRoute(builder: (_) => const ShipperNavigation());
       case topRestaurants:
         return MaterialPageRoute(builder: (_) => const TopRestaurantsScreen());
       case topProducts:
