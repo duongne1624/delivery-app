@@ -27,7 +27,13 @@ class _SplashScreenState extends State<SplashScreen> {
     if (!mounted) return;
 
     if (success) {
-      AppNavigator.toHome(context);
+      final user = auth.user;
+      if (user != null && user.role == 'shipper') {
+        // Điều hướng đến navigation dành cho shipper
+        AppNavigator.toShipper(context);
+      } else {
+        AppNavigator.toHome(context);
+      }
     } else {
       AppNavigator.toLogin(context);
     }

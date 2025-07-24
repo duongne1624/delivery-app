@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../models/order_model.dart';
 import '../../services/order_service.dart';
+import '../../services/payment_service.dart';
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -15,6 +16,7 @@ class OrderDetailScreen extends StatefulWidget {
 
 class _OrderDetailScreenState extends State<OrderDetailScreen> {
   late Future<OrderModel> _orderFuture;
+  Future<bool>? _paymentStatusFuture;
   final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
 
   @override
@@ -25,6 +27,18 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   void _loadOrder() {
     _orderFuture = OrderService.getOrderDetail(widget.orderId);
+    // Sau khi lấy order, kiểm tra nếu là online thì gọi verifyPayment
+    _orderFuture.then((order) {
+      if (order.payment.method.toLowerCase() != 'cod') {
+        setState(() {
+          _paymentStatusFuture = PaymentService.verifyPayment(order.id);
+        });
+      } else {
+        setState(() {
+          _paymentStatusFuture = null;
+        });
+      }
+    });
   }
 
   Future<void> _cancelOrder(String orderId) async {
@@ -52,7 +66,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
         if (!mounted) return;
 
-        // 👉 Reload lại dữ liệu đơn hàng
+        // Reload lại dữ liệu đơn hàng
         setState(() {
           _orderFuture = OrderService.getOrderDetail(orderId);
         });
@@ -147,6 +161,9 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   ),
                 ),
                 const SizedBox(height: 18),
+                // PHẦN THANH TOÁN
+                _buildPaymentSection(order, theme, isDark),
+                const SizedBox(height: 18),
                 Text('Danh sách món ăn:', style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
                 ...order.items.map(
@@ -218,6 +235,84 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildPaymentSection(OrderModel order, ThemeData theme, bool isDark) {
+    if (order.payment.method.toLowerCase() == 'cod') {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('Phương thức thanh toán:', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text('Thanh toán khi nhận hàng', style: theme.textTheme.bodyMedium),
+        ],
+      );
+    }
+    return FutureBuilder<bool>(
+      future: _paymentStatusFuture,
+      builder: (context, snapshot) {
+        final paid = snapshot.data == true;
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Phương thức thanh toán:', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(order.payment.method, style: theme.textTheme.bodyMedium),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(paid ? Icons.verified : Icons.error_outline, color: paid ? Colors.green : Colors.orange, size: 18),
+                      const SizedBox(width: 4),
+                      Text(
+                        paid ? 'Đã thanh toán' : 'Chưa thanh toán',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: paid ? Colors.green : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            if (paid)
+              TextButton(
+                onPressed: () => _showPaymentDetail(order),
+                child: const Text('Chi tiết'),
+              ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showPaymentDetail(OrderModel order) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Chi tiết thanh toán'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Mã đơn hàng: ${order.id}'),
+            Text('Phương thức: ${order.payment.method}'),
+            // Có thể bổ sung thêm các thông tin khác nếu backend trả về
+            const SizedBox(height: 8),
+            Text('Tổng tiền: ${currencyFormat.format(order.totalPrice)}'),
+            // ...
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Đóng'),
+          ),
+        ],
       ),
     );
   }

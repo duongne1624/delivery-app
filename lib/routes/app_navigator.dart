@@ -83,4 +83,12 @@ class AppNavigator {
       ),
     );
   }
+
+  static void toShipper(BuildContext context) {
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/shipper',
+      (route) => false,
+    );
+  }
 }

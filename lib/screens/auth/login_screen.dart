@@ -38,7 +38,12 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => isLoading = false);
 
     if (success) {
-      AppNavigator.toHome(context);
+      final user = context.read<AuthProvider>().user;
+      if (user != null && user.role == 'shipper') {
+        Navigator.of(context).pushReplacementNamed('/shipper');
+      } else {
+        AppNavigator.toHome(context);
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Đăng nhập thất bại')),
