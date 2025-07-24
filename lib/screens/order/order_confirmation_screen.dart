@@ -143,22 +143,26 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
       );
 
       final data = res['data'];
-      final orderId = data['order']['id'];
-      final paymentUrl = data['paymentUrl'];
-
       widget.cart.clear();
 
       if (_selectedPaymentMethod == 'cod') {
+        final orderId = data['order']['id'];
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => OrderDetailScreen(orderId: orderId)),
           (route) => route.isFirst,
         );
       } else {
+        final paymentUrl = data['paymentUrl'];
+        final orderId = data['orderId'] ?? data['order_id'];
+        if (paymentUrl == null) {
+          Fluttertoast.showToast(msg: 'Không nhận được link thanh toán từ hệ thống.');
+          return;
+        }
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (_) => PaymentWebViewScreen(
               paymentUrl: paymentUrl,
-              orderId: orderId,
+              orderId: orderId ?? '',
             ),
           ),
         );

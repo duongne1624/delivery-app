@@ -8,15 +8,14 @@ plugins {
 }
 
 // Load local.properties
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    FileInputStream(localPropertiesFile).use { stream ->
-        localProperties.load(stream)
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.exists() }?.let { file ->
+        FileInputStream(file).use { load(it) }
     }
 }
 val googleMapsApiKey: String = localProperties.getProperty("GOOGLE_MAPS_API_KEY")
-    ?: throw GradleException("GOOGLE_MAPS_API_KEY is not defined in local.properties")
+    ?.takeIf { it.isNotBlank() }
+    ?: throw GradleException("GOOGLE_MAPS_API_KEY is not defined or empty in local.properties")
 
 android {
     namespace = "com.example.delivery_online_app"
@@ -24,6 +23,7 @@ android {
     ndkVersion = "27.0.12077973"
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
@@ -39,17 +39,30 @@ android {
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
-        // Truyền key vào file strings.xml
+        // Pass key to strings.xml
         resValue("string", "google_maps_key", googleMapsApiKey)
-        // Truyền key vào AndroidManifest.xml
+        // Pass key to AndroidManifest.xml
         manifestPlaceholders["GOOGLE_MAPS_API_KEY"] = googleMapsApiKey
     }
 
     buildTypes {
         release {
+            // Use debug signing config temporarily; replace with release config for production
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = true // Enable code shrinking
+            isShrinkResources = true // Enable resource shrinking (requires isMinifyEnabled = true)
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+        }
+        debug {
+            isMinifyEnabled = false // Disable shrinking for debug builds
+            isShrinkResources = false // Explicitly disable resource shrinking for debug
         }
     }
+}
+
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    // Add other dependencies if needed
 }
 
 flutter {
