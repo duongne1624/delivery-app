@@ -29,6 +29,21 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="zalopay" />
+            </intent-filter>
+            <!-- Intent filter cho HTTP deep links -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" 
+                    android:host="your-domain.com"
+                    android:pathPrefix="/payment-callback" />
+            </intent-filter>
         </activity>
         <!-- Specify Flutter V2 embedding -->
         <meta-data
@@ -54,6 +69,15 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="https" />
+        </intent>
+    </queries>
+    <!-- Quyền truy vấn packages (Android 11+) -->
+    <queries>
+        <package android:name="vn.com.vng.zalopay" />
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="zalopay" />
         </intent>
     </queries>
 </manifest>

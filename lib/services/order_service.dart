@@ -22,6 +22,7 @@ class OrderService {
         'delivery_place_id': placeId,
         'note': note,
         'payment_method': paymentMethod,
+        'return_url': 'https://myapp.com/payment-return'
       },
     );
     return res.data;

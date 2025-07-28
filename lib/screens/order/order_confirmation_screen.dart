@@ -153,7 +153,6 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
         );
       } else {
         final paymentUrl = data['paymentUrl'];
-        final orderId = data['orderId'] ?? data['order_id'];
         if (paymentUrl == null) {
           Fluttertoast.showToast(msg: 'Không nhận được link thanh toán từ hệ thống.');
           return;
@@ -162,7 +161,6 @@ class _OrderConfirmationScreenState extends State<OrderConfirmationScreen> {
           MaterialPageRoute(
             builder: (_) => PaymentWebViewScreen(
               paymentUrl: paymentUrl,
-              orderId: orderId ?? '',
             ),
           ),
         );

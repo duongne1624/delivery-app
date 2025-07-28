@@ -2,10 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:delivery_online_app/utils/format_date.dart';
 import '../../models/order_model.dart';
 import '../../services/order_service.dart';
-import '../../services/payment_service.dart';
 import 'order_timeline.dart';
 
 
@@ -39,11 +37,10 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         ],
       );
     }
-    _paymentStatusFuture ??= PaymentService.verifyPayment(order.id);
     return FutureBuilder<bool>(
       future: _paymentStatusFuture,
       builder: (context, snapshot) {
-        final paid = snapshot.data == true;
+        final paid = order.payment.status == "success";
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
