@@ -226,6 +226,49 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 _buildPaymentSection(order, theme, isDark),
+                if (_canCancel(order.status))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () async {
+                          final confirm = await showDialog<bool>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Xác nhận hủy đơn'),
+                              content: const Text('Bạn có chắc chắn muốn hủy đơn hàng này?'),
+                              actions: [
+                                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Không')),
+                                ElevatedButton(onPressed: () => Navigator.pop(context, true), child: const Text('Có')),
+                              ],
+                            ),
+                          );
+
+                          if (confirm == true) {
+                            try {
+                              await OrderService.cancelOrder(order.id);
+                              setState(() {
+                                _orderFuture = OrderService.getOrderDetail(order.id);
+                              });
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Đã hủy đơn hàng thành công')),
+                              );
+                            } catch (e) {
+                              if (!mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Hủy đơn hàng thất bại: $e')),
+                              );
+                            }
+                          }
+                        },
+                        icon: const Icon(Icons.cancel_outlined),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                        label: const Text('Hủy đơn hàng'),
+                      ),
+                    ),
+                  ),
               ],
             ),
           );

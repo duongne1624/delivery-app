@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,10 +45,23 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
+  // GlobalKey for accessing Navigator context
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static bool _navigatorKeySet = false; // Flag to prevent duplicate setting
+
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_navigatorKeySet && context.mounted) {
+        print('MyApp: Setting navigator key at ${DateTime.now()}');
+        notificationProvider.setNavigatorKey(navigatorKey);
+        _navigatorKeySet = true;
+      }
+    });
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -59,8 +71,17 @@ class MyApp extends StatelessWidget {
       themeMode: themeProvider.themeMode,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.onGenerateRoute,
-
-      builder: (context, child) => AppBackground(child: child ?? const SizedBox()),
+      navigatorKey: navigatorKey, // Attach the navigator key
+      builder: (context, child) {
+        // Đảm bảo Overlay có sẵn trong context
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(
+              builder: (context) => AppBackground(child: child ?? const SizedBox()),
+            ),
+          ],
+        );
+      },
     );
   }
 }
