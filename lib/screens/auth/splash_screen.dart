@@ -4,8 +4,6 @@ import '../../providers/auth_provider.dart';
 import '../../providers/notification_provider.dart';
 import '../../routes/app_navigator.dart';
 import '../../theme/theme.dart';
-import '../../services/notification_service_singleton.dart';
-import '../../models/notification_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,13 +16,16 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAuth();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAuth();
+    });
   }
 
   Future<void> _checkAuth() async {
     await Future.delayed(const Duration(milliseconds: 1000));
 
     final auth = Provider.of<AuthProvider>(context, listen: false);
+    final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
     final success = await auth.loadUser();
 
     if (!mounted) return;
@@ -32,16 +33,20 @@ class _SplashScreenState extends State<SplashScreen> {
     if (success) {
       final user = auth.user;
       if (user != null) {
-        // Kết nối websocket notification
-        NotificationServiceSingleton.getInstance((NotificationModel notification) {
-          final provider = Provider.of<NotificationProvider>(context, listen: false);
-          provider.addNotification(notification);
-        }).connect(user.id);
-      }
-      if (user != null && user.role == 'shipper') {
-        AppNavigator.toShipper(context);
+        // Trì hoãn connect để đảm bảo _navigatorKey được gán
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            print('SplashScreen: Connecting to notification service for user ${user.id} at ${DateTime.now()}');
+            notificationProvider.connect(user.id);
+          }
+        });
+        if (user.role == 'shipper') {
+          AppNavigator.toShipper(context);
+        } else {
+          AppNavigator.toHome(context);
+        }
       } else {
-        AppNavigator.toHome(context);
+        AppNavigator.toLogin(context);
       }
     } else {
       AppNavigator.toLogin(context);
