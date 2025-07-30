@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:delivery_online_app/providers/chat_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,6 @@ void main() async {
   }
 
   await DioService.init();
-
   await dotenv.load(fileName: ".env");
 
   runApp(
@@ -37,6 +37,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => HomeProvider()),
         ChangeNotifierProvider(create: (_) => RestaurantProvider()),
         ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: const MyApp(),
     ),
@@ -46,9 +47,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // GlobalKey for accessing Navigator context
   static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
-  static bool _navigatorKeySet = false; // Flag to prevent duplicate setting
+  static bool _navigatorKeySet = false;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,6 @@ class MyApp extends StatelessWidget {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!_navigatorKeySet && context.mounted) {
-        print('MyApp: Setting navigator key at ${DateTime.now()}');
         notificationProvider.setNavigatorKey(navigatorKey);
         _navigatorKeySet = true;
       }
@@ -71,9 +70,8 @@ class MyApp extends StatelessWidget {
       themeMode: themeProvider.themeMode,
       initialRoute: AppRoutes.splash,
       onGenerateRoute: AppRoutes.onGenerateRoute,
-      navigatorKey: navigatorKey, // Attach the navigator key
+      navigatorKey: navigatorKey,
       builder: (context, child) {
-        // Đảm bảo Overlay có sẵn trong context
         return Overlay(
           initialEntries: [
             OverlayEntry(

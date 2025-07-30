@@ -196,7 +196,7 @@ class OrderScreenState extends State<OrderScreen> with AutomaticKeepAliveClientM
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              '#${order.id.substring(0, 8).toUpperCase()}',
+                                              '#${order.id.split('-')[0].toUpperCase()}',
                                               style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                                             ),
                                             const SizedBox(height: 4),

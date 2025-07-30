@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/shipper_service.dart';
 import '../../models/order_model.dart';
 import '../../widgets/order_address_map_view.dart';
+import '../../routes/app_navigator.dart';
 
 class ShipperOrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -49,6 +51,17 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen> {
     }
   }
 
+  bool _canChat(String status, String? customerId, DateTime? updatedAt) {
+    if (customerId == null || customerId.isEmpty) return false;
+    if (status == 'delivering') return true;
+    if (status == 'completed' && updatedAt != null) {
+      final now = DateTime.now();
+      final tenMinutesAgo = now.subtract(const Duration(minutes: 10));
+      return updatedAt.isAfter(tenMinutesAgo);
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<OrderModel>(
@@ -86,11 +99,31 @@ class _ShipperOrderDetailScreenState extends State<ShipperOrderDetailScreen> {
                 const SizedBox(height: 16),
                 Text('Danh sách món:', style: Theme.of(context).textTheme.titleSmall),
                 ...order.items.map((item) => ListTile(
-                  title: Text(item.product.name),
-                  subtitle: Text('Số lượng: ${item.quantity}'),
-                  trailing: Text('${item.price.toStringAsFixed(0)}đ'),
-                )),
+                      title: Text(item.product.name),
+                      subtitle: Text('Số lượng: ${item.quantity}'),
+                      trailing: Text('${item.price.toStringAsFixed(0)}đ'),
+                    )),
                 const SizedBox(height: 24),
+                if (_canChat(order.status, order.customer.id, order.updatedAt))
+                  Center(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.message),
+                      label: const Text('Nhắn tin với khách hàng'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        minimumSize: const Size(200, 48),
+                      ),
+                      onPressed: () {
+                        AppNavigator.toChat(
+                          context,
+                          order.id,
+                          order.shipper!.id,
+                          order.customer.id,
+                        );
+                      },
+                    ),
+                  ),
+                const SizedBox(height: 16),
                 Center(
                   child: order.status == 'pending'
                       ? ElevatedButton.icon(
