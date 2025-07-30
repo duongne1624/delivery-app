@@ -1,11 +1,10 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/order_model.dart';
 import '../../services/order_service.dart';
+import '../../routes/app_navigator.dart';
 import 'order_timeline.dart';
-
 
 class OrderDetailScreen extends StatefulWidget {
   final String orderId;
@@ -87,7 +86,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Mã đơn hàng: ${order.id}'),
+            Text('Mã đơn hàng: ${order.id.split('-')[0]}'),
             Text('Phương thức: ${order.payment.method}'),
             const SizedBox(height: 8),
             Text('Tổng tiền: ${currencyFormat.format(order.totalPrice)}'),
@@ -123,7 +122,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
         return 'Chờ xác nhận';
       case 'confirmed':
         return 'Đã xác nhận';
-      case 'shipping':
+      case 'delivering':
         return 'Đang giao';
       case 'completed':
         return 'Hoàn thành';
@@ -136,6 +135,17 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
 
   bool _canCancel(String status) {
     return status == 'pending' || status == 'confirmed';
+  }
+
+  bool _canChat(String status, String? shipperId, DateTime? updatedAt) {
+    if (shipperId == null || shipperId.isEmpty) return false;
+    if (status == 'delivering') return true;
+    if (status == 'completed' && updatedAt != null) {
+      final now = DateTime.now();
+      final tenMinutesAgo = now.subtract(const Duration(minutes: 10));
+      return updatedAt.isAfter(tenMinutesAgo);
+    }
+    return false;
   }
 
   @override
@@ -170,7 +180,7 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                   isDark: isDark,
                 ),
                 const SizedBox(height: 10),
-                _buildInfoRow('Mã đơn:', order.id, theme, isDark),
+                _buildInfoRow('Mã đơn:', order.id.split('-')[0], theme, isDark),
                 _buildInfoRow('Trạng thái:', _mapStatus(order.status), theme, isDark),
                 _buildInfoRow('Địa chỉ:', order.deliveryAddress, theme, isDark),
                 _buildInfoRow('Tổng tiền:', currencyFormat.format(order.totalPrice), theme, isDark),
@@ -226,9 +236,33 @@ class _OrderDetailScreenState extends State<OrderDetailScreen> {
                 ),
                 const SizedBox(height: 16),
                 _buildPaymentSection(order, theme, isDark),
+                const SizedBox(height: 20),
+                if (_canChat(order.status, order.shipper?.id, order.updatedAt))
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        if (order.shipper?.id != null) {
+                          AppNavigator.toChat(
+                            context,
+                            order.id,
+                            order.customer.id,
+                            order.shipper!.id,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Không thể nhắn tin: Vui lòng đăng nhập lại hoặc shipper chưa được gán')),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.message),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                      label: const Text('Nhắn tin với shipper'),
+                    ),
+                  ),
                 if (_canCancel(order.status))
                   Padding(
-                    padding: const EdgeInsets.only(top: 20),
+                    padding: const EdgeInsets.only(top: 10),
                     child: SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(

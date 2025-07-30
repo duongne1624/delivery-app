@@ -6,6 +6,7 @@ import '../screens/address/add_edit_user_address_screen.dart';
 import '../screens/auth/login_screen.dart';
 import '../screens/auth/register_screen.dart';
 import '../screens/auth/splash_screen.dart';
+import '../screens/chat/chat_screen.dart';
 import '../screens/product/top_products_screen.dart';
 import '../screens/restaurant/restaurant_detail_screen.dart';
 import '../screens/restaurant/top_restaurants_screen.dart';
@@ -30,6 +31,7 @@ class AppRoutes {
   static const String userAddresses = '/user/addresses';
   static const String addEditAddress = '/user/addresses/add-edit';
   static const String shipper = '/shipper';
+  static const String chat = '/chat';
 
   static Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
@@ -72,6 +74,15 @@ class AppRoutes {
         final address = settings.arguments as UserAddress?;
         return MaterialPageRoute(
           builder: (_) => AddEditUserAddressScreen(address: address),
+        );
+      case chat:
+        final args = settings.arguments as Map<String, dynamic>;
+        return MaterialPageRoute(
+          builder: (_) => ChatScreen(
+            orderId: args['orderId'],
+            userId: args['userId'],
+            otherUserId: args['otherUserId'],
+          ),
         );
       default:
         return MaterialPageRoute(

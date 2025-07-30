@@ -91,4 +91,16 @@ class AppNavigator {
       (route) => false,
     );
   }
+
+  static void toChat(BuildContext context, String orderId, String userId, String otherUserId) {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.chat,
+      arguments: {
+        'orderId': orderId,
+        'userId': userId,
+        'otherUserId': otherUserId,
+      },
+    );
+  }
 }
